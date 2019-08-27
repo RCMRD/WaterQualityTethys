@@ -1,0 +1,9 @@
+#inner-app-content {
+    padding: 0;
+    overflow: hidden;
+}
+
+#app-content, #inner-app-content, #map_id {
+    height: 100%;
+    width: 100%;
+}
