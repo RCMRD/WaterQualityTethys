@@ -30,14 +30,34 @@ class Waterq(TethysAppBase):
                 controller='waterq.controllers.home'
             ),
             UrlMap(
-                name='victoria',
-                url='waterq/victoria',
-                controller='waterq.controllers.victoria'
+                name='maps',
+                url='waterq/maps',
+                controller='waterq.controllers.maps'
+            ),
+            UrlMap(
+                name='timeseries',
+                url='waterq/timeseries',
+                controller='waterq.controllers.timeseries'
+            ),
+            UrlMap(
+                name='charts',
+                url='waterq/charts',
+                controller='waterq.controllers.charts'
             ),
             UrlMap(
                 name='get_map',
-                url='waterq/victoria/get_map',
+                url='waterq/maps/get_map',
                 controller='waterq.ajax_controller.get_map'
+            ),
+            UrlMap(
+                name='get_timeseries',
+                url='waterq/timeseries/get_timeseries',
+                controller='waterq.ajax_controller.get_timeseries'
+            ),
+            UrlMap(
+                name='get_chart',
+                url='waterq/charts/get_chart',
+                controller='waterq.ajax_controller.get_chart'
             ),
         )
 
