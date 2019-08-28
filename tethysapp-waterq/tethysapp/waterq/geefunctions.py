@@ -319,7 +319,23 @@ class landsat8(object):
                          return (tsi_coll.rename('TrophicIndex').updateMask(tsi_coll.lt(80)).set('system:time_start', img.get('system:time_start')))
 
                     map_id = self.rrs.map(trophicState).getMapId(vp.TSI)
+               elif product == 'chla':
+                    def chlorA(img):
+                         log_BG = (img.select('B1').divide(img.select('B3'))).log10()
+                         a0 = ee.Image(0.2412)
+                         a1 = ee.Image(-2.0546)
+                         a2 = ee.Image(1.1776)
+                         a3 = ee.Image(-0.5538)
+                         a4 = ee.Image(-0.4570)
 
+                         a1a = a1.multiply(log_BG.pow(1))
+                         a2a = a2.multiply(log_BG.pow(2))
+                         a3a = a3.multiply(log_BG.pow(3))
+                         a4a = a4.multiply(log_BG.pow(4))
+                         sumtsi = a1a.add(a2a).add(a3a).add(a4a)
+                         log10_chlor_a = a0.add(sumtsi)
+                         chlor_a = ee.Image(10).pow(log10_chlor_a)
+                    map_id = self.rrs.map(chlorA).getMapId(vp.chlor)
                else:
                     raise ValueError('You need a product to view')
           else:
