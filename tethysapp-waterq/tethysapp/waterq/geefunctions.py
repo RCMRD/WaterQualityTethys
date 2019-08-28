@@ -335,6 +335,7 @@ class landsat8(object):
                          sumtsi = a1a.add(a2a).add(a3a).add(a4a)
                          log10_chlor_a = a0.add(sumtsi)
                          chlor_a = ee.Image(10).pow(log10_chlor_a)
+                         return (chlor_a.rename('Chlorophyll').updateMask(chlor_a.lt(30)).set('system:time_start', img.get('system:time_start')))
                     map_id = self.rrs.map(chlorA).getMapId(vp.chlor)
                else:
                     raise ValueError('You need a product to view')
