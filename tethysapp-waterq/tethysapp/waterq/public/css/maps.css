@@ -3,7 +3,15 @@
     overflow: hidden;
 }
 
-#app-content, #inner-app-content, #map_id {
+#app-content, #inner-app-content, #map {
+	display: inline-block;
     height: 100%;
     width: 100%;
+}
+select
+ {
+	width: 100%;
+}
+.dates {
+	display: inline-block;
 }

@@ -12,17 +12,28 @@ def get_map(request):
             time_start = info.get('start_time')
             time_end = info.get('end_time')
             sensor = info.get('sensor')
-            collection = info.get('collection')
+            correction = info.get('correction')
             product = info.get('product')
 
-            if sensor == 'lc8':
-                lc8rrs_object = wq.landsat8(time_start, time_end)
-                rrs_img = lc8rrs_object.getMap(collection, product)
-                return_obj["url"] = rrs_img
+            if sensor == 'landsat8':
+                lc8_object = wq.landsat8(time_start, time_end)
+                img = lc8_object.getMap(correction, product)
+                return_obj["url"] = img
+                return_obj["success"] = "success"
+            elif sensor == 'sentinel2':
+                s2_object = wq.sentinel2(time_start, time_end)
+                img = s2_object.getMap(correction, product)
+                return_obj["url"] = img
+                return_obj["success"] = "success"
+            elif sensor == 'aqua' or sensor == 'terra':
+                platform = info.get('platform')
+                mod_object = wq.modis(time_start, time_end)
+                img = mod_object.getMap(sensor,correction,product)
+                print(img)
+                return_obj["url"] = img
                 return_obj["success"] = "success"
             else:
-                raise ValueError("There is an error")
-
+                raise ValueError("There is an error with the arguments")
 
         except Exception as e:
             return_obj["error"] = "Error Processing Request. Error: "+ str(e)

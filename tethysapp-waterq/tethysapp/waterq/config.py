@@ -14,8 +14,7 @@ selct_prod_options = [
                  ('Secchi Depth', 'sd'),
                  ('Trophic State Index', 'tsi'),
                  ('Chlorophyll-a', 'chla')]
-selct_sens_options = [('Landsat 8', 'lc8'),
-                 ('Sentinel-2', 's2')]
+selct_sens_options = [('Landsat 8', 'lc8'),('MODIS', 'mod')]
 date_format = 'yyyy-mm-dd'
 time_start_name = 'time_start'
 time_end_name = 'time_end'
@@ -64,7 +63,8 @@ buttons = {
         format='yyyy-mm-dd',
         start_view='decade',
         today_button=True,
-        initial='2015-08-01'
+        initial='2015-08-01',
+        attributes={'class':'hide'}
     ),
     "end_time":DatePicker(
         name='time_end',
@@ -72,7 +72,8 @@ buttons = {
         format='yyyy-mm-dd',
         start_view='decade',
         today_button=True,
-        initial='2015-09-01'
+        initial='2015-09-01',
+        attributes={'class':'hide'}
     ),
     "download_button": Button(
         display_text='Download Region',

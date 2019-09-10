@@ -16,8 +16,11 @@ except EEException as e:
      service_account_email='',
      filename='',
      private_key_password='notasecret',
-     scopes=ee.oauth.SCOPE + ' https://www.googleapis.com/auth/drive ')
+     scopes=ee.oauth.SCOPE + ' https:##www.googleapis.com/auth/drive ')
      ee.Initialize(credentials)
+
+tablename = 'users/kimlotte423/LV_Basin'                        
+table = ee.FeatureCollection(tablename)
 
 #################################################################
 ## DEFINE GENERAL FUNCTIONS
@@ -29,6 +32,7 @@ OZONE = ee.ImageCollection('TOMS/MERGED')
 DEM = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE')
 # PI Image
 PI = ee.Image(math.pi)
+pi = PI
 
 def extractBits(image, start, end, newName):
      # Compute the bits we need to extract.
@@ -40,7 +44,7 @@ def extractBits(image, start, end, newName):
      # a new name.
      return image.select([0], [newName])\
                     .bitwiseAnd(pattern)\
-                    .rightShift(start);
+                    .rightShift(start)
 def l8correction(img):
     imgDate_OLI = img.date()
     FOY_OLI = ee.Date.fromYMD(imgDate_OLI.get('year'), 1, 1)
@@ -274,19 +278,19 @@ class landsat8(object):
           
           return
      
-     def getMap(self, maptype, product):
-          if maptype == 'TOA':
+     def getMap(self, correction, product):
+          if correction == 'toa':
                if product == 'Secchi Depth':
                     print('creating chlorophyll map')
                else:
                     raise ValueError('You need a product to view')
-          elif maptype == 'RRS':
+          elif correction == 'rrs':
                if product == 'sd':
                     def secchiDepth(img):
                          blueRed_coll = (img.select('B2').divide(img.select('B4'))).log()
                          lnMOSD_coll = (ee.Image(1.4856).multiply(blueRed_coll)).add(ee.Image(0.2734))  # R2 = 0.8748 with Anthony's in-situ data
                          MOSD_coll = ee.Image(10).pow(lnMOSD_coll)
-                         sd_coll = (ee.Image(0.1777).multiply(MOSD_coll)).add(ee.Image(1.0813))
+                         sd_coll = (ee.Image(0.1777).multiply(MOSD_coll)).add(ee.Image(1.0813)).clip(table)
                          return sd_coll.rename('SecchiDepth').updateMask(sd_coll.lt(10)).set('system:time_start', img.get('system:time_start'))
                     map_id = self.rrs.map(secchiDepth).getMapId(vp.SD)
                
@@ -315,7 +319,7 @@ class landsat8(object):
 
                          TSI_c = ee.Image(30.6).add(ee.Image(9.81)).multiply(chlor_a_cal.log())
                          TSI_s = ee.Image(60).subtract(ee.Image(14.41)).multiply(sd_coll.log())
-                         tsi_coll = (TSI_c.add(TSI_s)).divide(ee.Image(2))
+                         tsi_coll = (TSI_c.add(TSI_s)).divide(ee.Image(2)).clip(table)
                          return (tsi_coll.rename('TrophicIndex').updateMask(tsi_coll.lt(80)).set('system:time_start', img.get('system:time_start')))
 
                     map_id = self.rrs.map(trophicState).getMapId(vp.TSI)
@@ -334,7 +338,7 @@ class landsat8(object):
                          a4a = a4.multiply(log_BG.pow(4))
                          sumtsi = a1a.add(a2a).add(a3a).add(a4a)
                          log10_chlor_a = a0.add(sumtsi)
-                         chlor_a = ee.Image(10).pow(log10_chlor_a)
+                         chlor_a = ee.Image(10).pow(log10_chlor_a).clip(table)
                          return (chlor_a.rename('Chlorophyll').updateMask(chlor_a.lt(30)).set('system:time_start', img.get('system:time_start')))
                     map_id = self.rrs.map(chlorA).getMapId(vp.chlor)
                else:
@@ -344,3 +348,328 @@ class landsat8(object):
           tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
 
           return tile_url_template.format(**map_id)
+
+#################################################################
+## MODIS FUNCTIONS
+#################################################################
+class modis(object):
+     def __init__(self, start_time, end_time):
+          self.aqua = ee.ImageCollection('NASA/OCEANDATA/MODIS-Aqua/L3SMI').filterDate(start_time,end_time)
+          self.terra = ee.ImageCollection('NASA/OCEANDATA/MODIS-Terra/L3SMI').filterDate(start_time,end_time).map(l8toa)
+          
+          return
+     def getMap(self,sensor,correction,product):
+          if sensor == "aqua":
+               if correction == "rrs":
+                    print("still working on this")
+               elif correction == "toa":
+                    if product == "chla":
+                         def chlorA(img):
+                              return img.select('chlor_a').clip(table).set('system:time_start', img.get('system:time_start'))
+                         map_id = self.aqua.map(chlorA).getMapId(vp.chlor)
+                    else:
+                         raise ValueError("select an Aqua product")
+          elif sensor == "terra":
+               if correction == "rrs":
+                    print("still working on this")
+               elif correction == "toa":
+                    if product == "chla":
+                         def chlorA(img):
+                              return img.select('chlor_a').clip(table).set('system:time_start', img.get('system:time_start'))
+                         map_id = self.aqua.map(chlorA).getMapId(vp.chlor)
+                    else:
+                         raise ValueError("Select a Terra Product")
+          else:
+               raise ValueError("Select a platform")
+          tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
+          return tile_url_template.format(**map_id)
+
+# #################################################################
+# ## SENTINEL 2 FUNCTIONS
+# #################################################################
+# ## sentinel-2
+# MSI = ee.ImageCollection('COPERNICUS/S2')
+
+# ## landsat-8 surface reflactance product (for masking purposes)
+# SRP = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
+
+# ## toms / omi
+# ozone = ee.ImageCollection('TOMS/MERGED')
+
+# def s2correction(img):
+#      imDate = img.date()
+#      footprint = img.geometry()
+#      startMonth = 5
+#      endMonth = 9
+#      startYear = 2013
+#      endYear = 2017
+#      forMask = SRP.filterBounds(footprint).select('B6').filterMetadata('CLOUD_COVER', "less_than", 10).filter(ee.Filter.calendarRange(startMonth, endMonth, 'month')).filter(ee.Filter.calendarRange(startYear, endYear, 'year'))
+#      mask = ee.Image(forMask.select('B6').median().lt(300))
+#      mask = mask.updateMask(mask).clip(footprint)
+
+#      bands = ['B1','B2','B3','B4','B5','B6','B7', 'B8', 'B8A', 'B11', 'B12']
+
+#      ## Rescale 
+#      rescale = ee.Image(img.divide(10000).multiply(mask).copyProperties(img)).select(bands)
+
+#      ## DEM
+#      DEM = ee.Image('USGS/SRTMGL1_003').clip(footprint)
+
+#      ## Ozone
+#      DU = ee.Image(ozone.filterDate('2015-01-01','2019-06-30').filterBounds(footprint).mean())
+
+#      ## Julian Day
+#      imgDate = ee.Date(img.get('system:time_start'))
+#      FOY = ee.Date.fromYMD(imgDate.get('year'),1,1)
+#      JD = imgDate.difference(FOY,'day').int().add(1)
+
+#      ## Earth-Sun distance
+#      myCos = ((ee.Image(0.0172).multiply(ee.Image(JD).subtract(ee.Image(2)))).cos()).pow(2)
+#      cosd = myCos.multiply(pi.divide(ee.Image(180))).cos()
+#      d = ee.Image(1).subtract(ee.Image(0.01673)).multiply(cosd).clip(footprint)
+
+#      ## Sun Azimuth
+#      SunAz = ee.Image.constant(img.get('MEAN_SOLAR_AZIMUTH_ANGLE')).clip(footprint)
+
+#      ## Sun Zenith
+#      SunZe = ee.Image.constant(img.get('MEAN_SOLAR_ZENITH_ANGLE')).clip(footprint)
+#      cosdSunZe = SunZe.multiply(pi.divide(ee.Image(180))).cos()
+#      sindSunZe = SunZe.multiply(pi.divide(ee.Image(180))).sin()
+
+#      ## Sat Zenith
+#      SatZe = ee.Image.constant(img.get('MEAN_INCIDENCE_ZENITH_ANGLE_B5')).clip(footprint)
+#      cosdSatZe = (SatZe).multiply(pi.divide(ee.Image(180))).cos()
+#      sindSatZe = (SatZe).multiply(pi.divide(ee.Image(180))).sin()
+
+#      ## Sat Azimuth
+#      SatAz = ee.Image.constant(img.get('MEAN_INCIDENCE_AZIMUTH_ANGLE_B5')).clip(footprint)
+
+#      ## Relative Azimuth
+#      RelAz = SatAz.subtract(SunAz)
+#      cosdRelAz = RelAz.multiply(pi.divide(ee.Image(180))).cos()
+
+#      ## Pressure
+#      P = (ee.Image(101325).multiply(ee.Image(1).subtract(ee.Image(0.0000225577).multiply(DEM)).pow(5.25588)).multiply(0.01)).multiply(mask)
+#      Po = ee.Image(1013.25)
+
+#      ## ESUN
+#      ESUN = ee.Image(ee.Array([ee.Image(img.get('SOLAR_IRRADIANCE_B1')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B2')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B3')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B4')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B5')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B6')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B7')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B8')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B8A')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B11')),
+#                   ee.Image(img.get('SOLAR_IRRADIANCE_B2'))]
+#                   )).toArray().toArray(1)
+#      ESUNImg = ESUN.arrayProject([0]).arrayFlatten([bands])
+
+#      ## Create an empty array for the images
+#      imgArr = rescale.select(bands).toArray().toArray(1)
+
+#      ## pTOA to Ltoa
+#      Ltoa = imgArr.multiply(ESUN).multiply(cosdSunZe).divide(pi.multiply(d.pow(2)))
+
+#      ## Band Centers
+#      bandCenter = ee.Image(443).divide(1000).addBands(ee.Image(490).divide(1000)) \
+#                     .addBands(ee.Image(560).divide(1000)) \
+#                     .addBands(ee.Image(665).divide(1000)) \
+#                     .addBands(ee.Image(705).divide(1000)) \
+#                     .addBands(ee.Image(740).divide(1000)) \
+#                     .addBands(ee.Number(783).divide(1000)) \
+#                     .addBands(ee.Number(842).divide(1000)) \
+#                     .addBands(ee.Number(865).divide(1000)) \
+#                     .addBands(ee.Number(1610).divide(1000)) \
+#                     .addBands(ee.Number(2190).divide(1000)) \
+#                     .toArray().toArray(1)
+     
+#      ## Ozone Coefficients
+#      koz = ee.Image(0.0039).addBands(ee.Image(0.0213)) \
+#               .addBands(ee.Image(0.1052)) \
+#               .addBands(ee.Image(0.0505)) \
+#               .addBands(ee.Image(0.0205)) \
+#               .addBands(ee.Image(0.0112)) \
+#               .addBands(ee.Image(0.0075)) \
+#               .addBands(ee.Image(0.0021)) \
+#               .addBands(ee.Image(0.0019)) \
+#               .addBands(ee.Image(0)) \
+#               .addBands(ee.Image(0)) \
+#               .toArray().toArray(1)
+
+#      ## Calculate Ozone Optical Thickness
+#      Toz = koz.multiply(DU).divide(ee.Image(1000))
+
+#      ## Calculate TOA Radiance in the absense of Ozone
+#      Lt = Ltoa.multiply(((Toz)).multiply((ee.Image(1).divide(cosdSunZe)).add(ee.Image(1).divide(cosdSatZe))).exp())
+
+#      ## Calculate Rayleigh Optical Thickness
+#      Tr = (P.divide(Po)).multiply(ee.Image(0.008569).multiply(bandCenter.pow(-4))).multiply((ee.Image(1)\
+#           .add(ee.Image(0.0113).multiply(bandCenter.pow(-2))).add(ee.Image(0.00013).multiply(bandCenter.pow(-4)))))
+
+#      ## Specular reflection (s- and p- polarization states)
+#      theta_V = ee.Image(0.0000000001)
+#      sin_theta_j = sindSunZe.divide(ee.Image(1.333))
+
+#      theta_j = sin_theta_j.asin().multiply(ee.Image(180).divide(pi))
+
+#      theta_SZ = SunZe
+
+#      R_theta_SZ_s = (((theta_SZ.multiply(pi.divide(ee.Image(180)))).subtract(theta_j.multiply(pi.divide(ee.Image(180))))).sin().pow(2)).divide((((theta_SZ.multiply(pi.divide(ee.Image(180)))).add(theta_j.multiply(pi.divide(ee.Image(180))))).sin().pow(2)))
+
+#      R_theta_V_s = ee.Image(0.0000000001)
+
+#      R_theta_SZ_p = (((theta_SZ.multiply(pi.divide(180))).subtract(theta_j.multiply(pi.divide(180)))).tan().pow(2)).divide((((theta_SZ.multiply(pi.divide(180))).add(theta_j.multiply(pi.divide(180)))).tan().pow(2)))
+
+#      R_theta_V_p = ee.Image(0.0000000001)
+
+#      R_theta_SZ = ee.Image(0.5).multiply(R_theta_SZ_s.add(R_theta_SZ_p))
+
+#      R_theta_V = ee.Image(0.5).multiply(R_theta_V_s.add(R_theta_V_p))
+  
+#      ## Sun-sensor geometry
+#      theta_neg = ((cosdSunZe.multiply(ee.Image(-1))).multiply(cosdSatZe)).subtract((sindSunZe).multiply(sindSatZe).multiply(cosdRelAz))
+
+#      theta_neg_inv = theta_neg.acos().multiply(ee.Image(180).divide(pi))
+
+#      theta_pos = (cosdSunZe.multiply(cosdSatZe)).subtract(sindSunZe.multiply(sindSatZe).multiply(cosdRelAz))
+
+#      theta_pos_inv = theta_pos.acos().multiply(ee.Image(180).divide(pi))
+
+#      cosd_tni = theta_neg_inv.multiply(pi.divide(180)).cos() ## in degrees
+
+#      cosd_tpi = theta_pos_inv.multiply(pi.divide(180)).cos() ## in degrees
+
+#      Pr_neg = ee.Image(0.75).multiply((ee.Image(1).add(cosd_tni.pow(2))))
+
+#      Pr_pos = ee.Image(0.75).multiply((ee.Image(1).add(cosd_tpi.pow(2))))
+  
+#      ## Rayleigh scattering phase function
+#      Pr = Pr_neg.add((R_theta_SZ.add(R_theta_V)).multiply(Pr_pos))
+
+#      ## rayleigh radiance contribution
+#      denom = ee.Image(4).multiply(pi).multiply(cosdSatZe)
+#      Lr = (ESUN.multiply(Tr)).multiply(Pr.divide(denom))
+
+#      ## rayleigh corrected radiance
+#      Lrc = Lt.subtract(Lr)
+#      LrcImg = Lrc.arrayProject([0]).arrayFlatten([bands])
+
+#      ## Aerosol Correction ##
+
+#      ## Bands in nm
+#      bands_nm = ee.Image(443).addBands(ee.Image(490)) \
+#                             .addBands(ee.Image(560)) \
+#                             .addBands(ee.Image(665)) \
+#                             .addBands(ee.Image(705)) \
+#                             .addBands(ee.Image(740)) \
+#                             .addBands(ee.Image(783)) \
+#                             .addBands(ee.Image(842)) \
+#                             .addBands(ee.Image(865)) \
+#                             .addBands(ee.Image(0)) \
+#                             .addBands(ee.Image(0)) \
+#                             .toArray().toArray(1)
+
+#      ## Lam in SWIR bands
+#      Lam_10 = LrcImg.select('B11')
+#      Lam_11 = LrcImg.select('B12')
+
+#      ## Calculate aerosol type
+#      eps = ((((Lam_11).divide(ESUNImg.select('B12'))).log()).subtract(((Lam_10).divide(ESUNImg.select('B11'))).log())).divide(ee.Image(2190).subtract(ee.Image(1610)))
+
+#      ## Calculate multiple scattering of aerosols for each band
+#      Lam = (Lam_11).multiply(((ESUN).divide(ESUNImg.select('B12')))).multiply((eps.multiply(ee.Image(-1))).multiply((bands_nm.divide(ee.Image(2190)))).exp())
+
+#      ## diffuse transmittance
+#      trans = Tr.multiply(ee.Image(-1)).divide(ee.Image(2)).multiply(ee.Image(1).divide(cosdSatZe)).exp()
+
+#      ## Compute water-leaving radiance
+#      Lw = Lrc.subtract(Lam).divide(trans)
+
+#      ## water-leaving reflectance
+#      pw = (Lw.multiply(pi).multiply(d.pow(2)).divide(ESUN.multiply(cosdSunZe)))
+#      pwImg = pw.arrayProject([0]).arrayFlatten([bands])
+
+#      ## remote sensing reflectance
+#      Rrs = (pw.divide(pi).arrayProject([0]).arrayFlatten([bands]).slice(0,9))
+
+#      return Rrs
+# class sentinel2(object):   
+#      def __init__(self, start_time, end_time):
+#           self.rrs = ee.ImageCollection('COPERNICUS/S2').filterDate(start_time,end_time).map(s2correction)
+#           # print(self.rrs.size().getInfo())
+          
+#           return
+     
+#      def getMap(self, correction, product):
+#           if correction == 'TOA':
+#                if product == 'Secchi Depth':
+#                     print('creating chlorophyll map')
+#                else:
+#                     raise ValueError('You need a product to view')
+#           elif correction == 'RRS':
+#                if product == 'sd':
+#                     def secchiDepth(img):
+#                          blueRed_coll = (img.select('B2').divide(img.select('B4'))).log()
+#                          lnMOSD_coll = (ee.Image(1.4856).multiply(blueRed_coll)).add(ee.Image(0.2734))  # R2 = 0.8748 with Anthony's in-situ data
+#                          MOSD_coll = ee.Image(10).pow(lnMOSD_coll)
+#                          sd_coll = (ee.Image(0.1777).multiply(MOSD_coll)).add(ee.Image(1.0813)).clip(table)
+#                          return sd_coll.rename('SecchiDepth').updateMask(sd_coll.lt(10)).set('system:time_start', img.get('system:time_start'))
+#                     map_id = self.rrs.map(secchiDepth).getMapId(vp.SD)
+               
+#                elif product == 'tsi':
+#                     def trophicState(img):
+#                          log_BG = (img.select('B1').divide(img.select('B3'))).log10()
+#                          a0 = ee.Image(0.2412)
+#                          a1 = ee.Image(-2.0546)
+#                          a2 = ee.Image(1.1776)
+#                          a3 = ee.Image(-0.5538)
+#                          a4 = ee.Image(-0.4570)
+
+#                          a1a = a1.multiply(log_BG.pow(1))
+#                          a2a = a2.multiply(log_BG.pow(2))
+#                          a3a = a3.multiply(log_BG.pow(3))
+#                          a4a = a4.multiply(log_BG.pow(4))
+#                          sumtsi = a1a.add(a2a).add(a3a).add(a4a)
+#                          log10_chlor_a = a0.add(sumtsi)
+#                          chlor_a = ee.Image(10).pow(log10_chlor_a)
+#                          chlor_a_cal = ee.Image(4.0752).multiply(chlor_a).subtract(ee.Image(3.9617))
+
+#                          blueRed_coll = (img.select('B2').divide(img.select('B4'))).log()
+#                          lnMOSD_coll = (ee.Image(1.4856).multiply(blueRed_coll)).add(ee.Image(0.2734))  # R2 = 0.8748 with Anthony's in-situ data
+#                          MOSD_coll = ee.Image(10).pow(lnMOSD_coll)
+#                          sd_coll = (ee.Image(0.1777).multiply(MOSD_coll)).add(ee.Image(1.0813))
+
+#                          TSI_c = ee.Image(30.6).add(ee.Image(9.81)).multiply(chlor_a_cal.log())
+#                          TSI_s = ee.Image(60).subtract(ee.Image(14.41)).multiply(sd_coll.log())
+#                          tsi_coll = (TSI_c.add(TSI_s)).divide(ee.Image(2)).clip(table)
+#                          return (tsi_coll.rename('TrophicIndex').updateMask(tsi_coll.lt(80)).set('system:time_start', img.get('system:time_start')))
+
+#                     map_id = self.rrs.map(trophicState).getMapId(vp.TSI)
+#                elif product == 'chla':
+#                     def chlorA(img):
+#                          log_BG = (img.select('B1').divide(img.select('B3'))).log10()
+#                          a0 = ee.Image(0.2412)
+#                          a1 = ee.Image(-2.0546)
+#                          a2 = ee.Image(1.1776)
+#                          a3 = ee.Image(-0.5538)
+#                          a4 = ee.Image(-0.4570)
+
+#                          a1a = a1.multiply(log_BG.pow(1))
+#                          a2a = a2.multiply(log_BG.pow(2))
+#                          a3a = a3.multiply(log_BG.pow(3))
+#                          a4a = a4.multiply(log_BG.pow(4))
+#                          sumtsi = a1a.add(a2a).add(a3a).add(a4a)
+#                          log10_chlor_a = a0.add(sumtsi)
+#                          chlor_a = ee.Image(10).pow(log10_chlor_a).clip(table)
+#                          return (chlor_a.rename('Chlorophyll').updateMask(chlor_a.lt(40)).set('system:time_start', img.get('system:time_start')))
+#                     map_id = self.rrs.map(chlorA).getMapId(vp.chlor)
+#                else:
+#                     raise ValueError('You need a product to view')
+#           else:
+#                print('do stuff here')
+#           tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
+
+#           return tile_url_template.format(**map_id)
