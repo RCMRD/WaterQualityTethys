@@ -1,17 +1,47 @@
+body {
+overflow:hidden;
+font-family: Muli;
+}
 #inner-app-content {
     padding: 0;
     overflow: hidden;
 }
 
-#app-content, #inner-app-content, #map {
+#app-content, #inner-app-content {
 	display: inline-block;
     height: 100%;
     width: 100%;
 }
+#map, #map2{
+    display: block;
+    height: 100%;
+    width: 50%;
+    float:left;
+}
+
+#map{
+    border-right:2px solid;
+}
+
+#map2{
+    border-left:2px solid;
+}
+
 select
  {
 	width: 100%;
 }
 .dates {
 	display: inline-block;
+}
+
+#app-content-wrapper #app-content{
+    padding-bottom: 0;
+}
+
+#app-content-wrapper #app-content #app-navigation{
+    background-color:#E5E7E9;
+    box-shadow: 2px 5px 5px #868585;
+    z-index: 500;
+    height: calc(100vh - 2px);
 }

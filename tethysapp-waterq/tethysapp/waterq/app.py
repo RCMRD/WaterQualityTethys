@@ -8,10 +8,10 @@ class Waterq(TethysAppBase):
 
     name = 'Water Quality Viewer for Inland Lakes in Eastern and Southern Africa'
     index = 'waterq:home'
-    icon = 'waterq/images/icon.gif'
+    icon = 'waterq/images/icon.png'
     package = 'waterq'
     root_url = 'waterq'
-    color = '#EC56EA'
+    color = '#3F3C3C'
     description = 'Place a brief description of your app here.'
     tags = 'Timeseries, Water Quality, Chlorophyll, Temperature'
     enable_feedback = False
