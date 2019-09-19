@@ -2,30 +2,30 @@
 {% load tethys_gizmos staticfiles %}
 
 {% block styles %}
-    {{ block.super }}
-     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-  		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-  		crossorigin=""/>
-  	<link href="{% static 'waterq/css/main.css' %}" rel="stylesheet"/>
-    <link href="{% static 'waterq/css/maps.css' %}" rel="stylesheet"/>
-  	<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.css" />
+{{ block.super }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin="" />
+<link href="{% static 'waterq/css/main.css' %}" rel="stylesheet" />
+<link href="{% static 'waterq/css/maps.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.css" />
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Muli" />
 {% endblock %}
 
 
 {% block scripts %}
-  {{ block.super }}
-  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-  crossorigin=""></script>
-  <script src="https://code.jquery.com/jquery-3.4.1.js"
-	integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-	crossorigin="anonymous"></script>
-  <script src="https://cdn.rawgit.com/mejackreed/Leaflet-IIIF/v2.0.1/leaflet-iiif.js"></script>
-  <script src="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.js"></script>
-  <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js" type="text/javascript"></script>
-  <script src="{% static 'waterq/js/main.js' %}" type="text/javascript"></script>
-  <script src="{% static 'waterq/js/maps.js' %}" type="text/javascript"></script>
+{{ block.super }}
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+<script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.rawgit.com/mejackreed/Leaflet-IIIF/v2.0.1/leaflet-iiif.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.js"></script>
+<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js" type="text/javascript"></script>
+<script src="{% static 'waterq/js/main.js' %}" type="text/javascript"></script>
+<script src="{% static 'waterq/js/maps.js' %}" type="text/javascript"></script>
 {% endblock %}
 
 {% block header_buttons %}
@@ -34,34 +34,59 @@
 
 {% block app_navigation_items %}
 <li class="title">App Navigation</li>
-
 <form name="selector" id="options">
-	<p id="master">
-	 <b>Choose Your Satellite Platform:</b> 
-	 <br>
-	 <select name="master" id="platform" class="selectors" size=1>
-	 	<option value="modis"> Modis</option>
-		<option value="sentinel">Sentinel</option>
-		<option value="landsat">Landsat</option>
-	 </select>
-	</p>
+    <p id="master">
+        <span class="optTitle">Satellite Platform:</span>
+        <br>
+        <select name="master" id="platform" class="selectors" >
+            <option value="modis" selected> Modis</option>
+            <option value="sentinel">Sentinel</option>
+            <option value="landsat">Landsat</option>
+        </select>
+    </p>
+    <p id="sensorSelect">
+        <span class="optTitle" id="missionTitle">Sensor:</span>
+        <br>
+        <select name="sensor" id="sensor" class="selectors">
+            <option value="aqua" selected>Aqua</option>
+            <option value="terra">Terra</option>
+            <option value="others">here</option>
+        </select>
+    </p>
+    <p id="correctionSelect">
+        <span class="optTitle">Correction Type:</span>
+        <br>
+        <select name="correction" id="correction" class="selectors">
+            <option value="rrs" selected>RRS</option>
+            <option value="toa">TOA</option>
+        </select>
+    </p>
+    <p id="productSelect">
+        <span class="optTitle">Product:</span>
+        <br>
+        <select name="product" id="product" class="selectors">
+            <option value="chla" selected>CHL_A</option>
+            <option value="sd">Secchi Depth</option>
+        </select>
+    </p>
 </form>
-<form id= "date" class="dates">
-  	<p id="startDate"> <b>Start Date:</b> 
-  		{% gizmo time_start %}
-  		</p>
-  	<p id="endDate"> <b>End Date:</b> 
-  		{% gizmo time_end %}
-  		</p>
+<form id="date" class="dates">
+    <p id="startDate">
+        <b>Start Date:</b>
+        {% gizmo time_start %}
+    </p>
+    <p id="endDate">
+        <b>End Date:</b>
+        {% gizmo time_end %}
+    </p>
 </form>
-  	<br>
-  		{% gizmo map_button %}
-  	<br>
-  	<br>
-  		{% gizmo timeseries_button %}
-  	<br>
- 	<br>
-  		{% gizmo download_button %}
+<br>
+<div>
+    <p>Set variables then click button below to load right or left map.</p>
+    <button id="lmapLoad">Load left</button>
+    <button id="rmapLoad">Load right</button>
+</div>
+
 {% endblock %}
 
 {% block app_content %}

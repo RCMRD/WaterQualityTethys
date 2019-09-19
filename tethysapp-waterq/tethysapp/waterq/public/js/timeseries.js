@@ -1,4 +1,4 @@
-var LIBRARY_OBJECT = (function {
+var LIBRARY_OBJECT = (function () {
 	// Global variable
 	var public_interface;
 
@@ -12,7 +12,7 @@ var LIBRARY_OBJECT = (function {
 
 	};
 
-	$(function(){
-		init_all();
-	})
+    $(function () {
+        init_all();
+    });
 }());

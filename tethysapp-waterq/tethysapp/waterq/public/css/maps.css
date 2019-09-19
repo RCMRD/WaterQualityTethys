@@ -12,11 +12,16 @@ font-family: Muli;
     height: 100%;
     width: 100%;
 }
-#map, #map2{
+
+#app-content-wrapper  {
+    overflow: hidden;
+}
+
+#map, #map2 {
     display: block;
     height: 100%;
     width: 50%;
-    float:left;
+    float: left;
 }
 
 #map{
@@ -39,9 +44,28 @@ select
     padding-bottom: 0;
 }
 
-#app-content-wrapper #app-content #app-navigation{
-    background-color:#E5E7E9;
-    box-shadow: 2px 5px 5px #868585;
-    z-index: 500;
-    height: calc(100vh - 2px);
+    #app-content-wrapper #app-content #app-navigation {
+        background-color: #E5E7E9;
+        box-shadow: 2px 5px 5px #868585;
+        z-index: 500;
+        height: calc(100vh - 2px);
+        left: -250px;
+        width: 250px;
+    }
+.optTitle{
+    font-weight:700;
+}
+
+#app-content-wrapper.show-nav #app-content {
+    padding-right: 250px;
+    -webkit-transform: translateX(-250px);
+    -moz-transform: translateX(-250px);
+    -ms-transform: translateX(-250px);
+    -o-transform: translateX(-250px);
+    transform: translateX(-250px);
+    -webkit-transform: translate3d(250px,0,0);
+    -moz-transform: translate3d(250px,0,0);
+    -ms-transform: translate3d(250px,0,0);
+    -o-transform: translate3d(250px,0,0);
+    transform: translate3d(250px,0,0);
 }
