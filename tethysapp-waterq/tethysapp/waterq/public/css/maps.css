@@ -1,20 +1,25 @@
 body {
-overflow:hidden;
-font-family: Muli;
+    overflow: hidden;
+    font-family: Muli;
 }
+
 #inner-app-content {
     padding: 0;
     overflow: hidden;
 }
 
 #app-content, #inner-app-content {
-	display: inline-block;
+    display: inline-block;
     height: 100%;
     width: 100%;
 }
 
-#app-content-wrapper  {
+#app-content-wrapper {
     overflow: hidden;
+}
+
+.title {
+    text-align: center;
 }
 
 #map, #map2 {
@@ -24,36 +29,37 @@ font-family: Muli;
     float: left;
 }
 
-#map{
-    border-right:2px solid;
+#map {
+    border-right: 2px solid;
 }
 
-#map2{
-    border-left:2px solid;
+#map2 {
+    border-left: 2px solid;
 }
 
-select
- {
-	width: 100%;
+select {
+    width: 100%;
 }
+
 .dates {
-	display: inline-block;
+    display: inline-block;
 }
 
-#app-content-wrapper #app-content{
+#app-content-wrapper #app-content {
     padding-bottom: 0;
 }
 
-    #app-content-wrapper #app-content #app-navigation {
-        background-color: #E5E7E9;
-        box-shadow: 2px 5px 5px #868585;
-        z-index: 500;
-        height: calc(100vh - 2px);
-        left: -250px;
-        width: 250px;
-    }
-.optTitle{
-    font-weight:700;
+#app-content-wrapper #app-content #app-navigation {
+    background-color: #E5E7E9;
+    box-shadow: 2px 5px 5px #868585;
+    z-index: 500;
+    height: calc(100vh - 2px);
+    left: -250px;
+    width: 250px;
+}
+
+.optTitle {
+    font-weight: 700;
 }
 
 #app-content-wrapper.show-nav #app-content {

@@ -219,6 +219,9 @@ var LIBRARY_OBJECT = (function () {
         $('[name="master"]').change(function () {
             fillSensorOptions();
         });
+        if ($("#app-content").css('padding-right') === "0px") {
+            $(".toggle-nav")[0].click();
+        }
     });
     return public_interface;
 }());

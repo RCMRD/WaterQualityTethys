@@ -3,7 +3,7 @@ from tethys_sdk.gizmos import Button
 from django.contrib.auth.decorators import login_required
 from .config import buttons as bt
 
-@login_required()
+#@login_required()
 
 def home(request):
     map_button = Button(
