@@ -51,7 +51,7 @@ class Waterq(TethysAppBase):
             ),
             UrlMap(
                 name='get_timeseries',
-                url='waterq/timeseries/get_timeseries',
+                url='waterq/maps/get_timeseries',
                 controller='waterq.ajax_controller.get_timeseries'
             ),
             UrlMap(

@@ -6,6 +6,7 @@ import datetime
 import pandas as pd
 import random
 import string
+import sys
 from . import visParams as vp
 
 try:
@@ -383,6 +384,54 @@ class modis(object):
                raise ValueError("Select a platform")
           tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
           return tile_url_template.format(**map_id)
+
+def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[], dateFrom=None, dateTo=None, reducer=None):
+    """  """
+    try:
+        print("0")
+        geometry = None
+        indexCollection = None
+        print(str(coords[0]))
+        if isinstance(coords[0], list):
+            print("1")
+            geometry = ee.Geometry.Polygon(coords)
+        else:
+            print("2")
+            geometry = ee.Geometry.Point(coords)
+        print("past geo")
+        print(str(geometry))
+        if indexName != None:
+            indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo).select(indexName)
+        else:
+            indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo)
+        print("past ic")
+        print(str(indexCollection))
+        def getIndex(image):
+            """  """
+            theReducer = None;
+            if(reducer == 'min'):
+                theReducer = ee.Reducer.min()
+            elif (reducer == 'max'):
+                theReducer = ee.Reducer.max()
+            else:
+                theReducer = ee.Reducer.mean()
+            if indexName != None:
+                indexValue = image.reduceRegion(theReducer, geometry, scale).get(indexName)
+            else:
+                indexValue = image.reduceRegion(theReducer, geometry, scale)
+            date = image.get('system:time_start')
+            indexImage = ee.Image().set('indexValue', [ee.Number(date), indexValue])
+            return indexImage
+        indexCollection1 = indexCollection.map(getIndex)
+        print("past get index")
+        indexCollection2 = indexCollection1.aggregate_array('indexValue')
+        print("past agg")
+        values = indexCollection2.getInfo()
+        print("I have values")
+    except Exception as e:
+        print(str(e))
+        raise Exception(sys.exc_info()[0])
+    return values
 
 # #################################################################
 # ## SENTINEL 2 FUNCTIONS
