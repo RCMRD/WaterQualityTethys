@@ -388,24 +388,22 @@ class modis(object):
 def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[], dateFrom=None, dateTo=None, reducer=None):
     """  """
     try:
-        print("0")
         geometry = None
         indexCollection = None
-        print(str(coords[0]))
         if isinstance(coords[0], list):
-            print("1")
+            print("polygon")
             geometry = ee.Geometry.Polygon(coords)
         else:
-            print("2")
+            print("point")
             geometry = ee.Geometry.Point(coords)
-        print("past geo")
-        print(str(geometry))
-        if indexName != None:
-            indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo).select(indexName)
+        if(dateFrom != None):
+            if indexName != None:
+                indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo).select(indexName)
+            else:
+                indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo)
         else:
-            indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo)
+            indexCollection = ee.ImageCollection(collectionName)
         print("past ic")
-        print(str(indexCollection))
         def getIndex(image):
             """  """
             theReducer = None;
@@ -414,16 +412,19 @@ def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[
             elif (reducer == 'max'):
                 theReducer = ee.Reducer.max()
             else:
+                print("reducer was mean")
                 theReducer = ee.Reducer.mean()
             if indexName != None:
                 indexValue = image.reduceRegion(theReducer, geometry, scale).get(indexName)
             else:
+                print("no indexName requested, will get all")
                 indexValue = image.reduceRegion(theReducer, geometry, scale)
+                print(str(indexValue))
             date = image.get('system:time_start')
             indexImage = ee.Image().set('indexValue', [ee.Number(date), indexValue])
+            print(str(indexValue))
             return indexImage
         indexCollection1 = indexCollection.map(getIndex)
-        print("past get index")
         indexCollection2 = indexCollection1.aggregate_array('indexValue')
         print("past agg")
         values = indexCollection2.getInfo()

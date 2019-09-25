@@ -100,7 +100,7 @@ def get_timeseries(request):
             info = request.POST
             collection = info.get('collection')
             indexName = info.get('indexname', None)
-            scale = float(info.get('scale', 3000))
+            scale = float(info.get('scale', 30))
             geometry = json.loads(info.get('geometry', None))
             time_start = info.get('start_time', None)
             time_end = info.get('end_time', None)

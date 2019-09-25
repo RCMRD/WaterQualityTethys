@@ -1,21 +1,14 @@
-var gmap, gmap2, gdata, gconvertData;
+var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly;
 var LIBRARY_OBJECT = (function () {
     // Global Variables
-    var //map_id,
-        //chart_id,
-        //chart,
-        map,
+    var map,
         map2,
         platform,
         map1Layer,
         map2Layer,
-        modalChart;
-        //sensorObject,
-        //optionDict,
-        //chkSensor,
-        //chkProduct,
-        //chkCorrection,
-        //return_obj;
+        modalChart,
+        drawnlayer,
+        createdPolyCoords;
     
     // Global Functions
     var init_vars,
@@ -54,15 +47,6 @@ var LIBRARY_OBJECT = (function () {
         ];
         return;
     };
-    function movesync() {
-        map2.off('move', movesync2);
-        map2.setMaxBounds(map.getBounds());
-    }
-    function movesync2() {
-        console.log("it ran this anyway");
-        map.off('move', movesync);
-        map.setMaxBounds(map2.getBounds());
-    }
     // Define Map Attributes
     init_map = function () {
         // Based on choice,t he view should change automatically
@@ -77,16 +61,16 @@ var LIBRARY_OBJECT = (function () {
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        map.on('move', movesync);
-
+        //map.on('move', movesync);
 
 
         map2 = L.map('map2').setView([-0.7, 33.5], 8.4);
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map2);
-        map2.on('move', movesync2);
-
+        //map2.on('move', movesync2);
+        map.sync(map2);
+        map2.sync(map);
         gmap = map;
         gmap2 = map2;
         var editableLayers = new L.FeatureGroup();
@@ -94,37 +78,37 @@ var LIBRARY_OBJECT = (function () {
 
         var drawPluginOptions = {
             draw: {
-                polygon: {
-                    allowIntersection: false,
-                    drawError: {
-                        color: '#e1e100',
-                        message: '<strong>Oh Snap!<strong> you can\'t draw that !'
-                    },
-                    shapeOptions: {
-                        color: '#97009c'
-                    }
-                },
+                polygon: true,
                 polyline: false,
                 circle: false,
                 circlemarker: false,
-                rectangle: {
-                    shapeOptions: {
-                        color: '#97009c'
-                    }
-                },
+                rectangle: true,
                 marker: true
             },
             edit: {
                 featureGroup: editableLayers,
                 edit: false,
-                remove: false
+                remove: true
             }
         };
 
         var drawControl = new L.Control.Draw(drawPluginOptions);
         map.addControl(drawControl);
 
-        //map.addLayer(new L.FeatureGroup());
+        map.on(L.Draw.Event.CREATED, function (e) {
+            var type = e.layerType;
+            drawnlayer = e.layer;
+            gdrawnLayer = drawnlayer;
+            createdPolyCoords = drawnlayer.toGeoJSON();
+            gCreatedPoly = createdPolyCoords;
+            editableLayers.addLayer(drawnlayer);
+        });
+
+        map.on('draw:drawstart', function (e) {
+            if (drawnlayer) {
+                drawnlayer.removeFrom(editableLayers);
+            }
+        });
     };
 
     init_events = function () {
@@ -150,7 +134,7 @@ var LIBRARY_OBJECT = (function () {
         };
 
         time_series_request = function (data_dict) {
-            var debug = true;
+            var debug = false;
             if (debug) {
                 $("#chart-modal").modal('show');
                 $.getJSON("https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/samples/data/usdeur.json", function (data) {
@@ -204,7 +188,7 @@ var LIBRARY_OBJECT = (function () {
             },
             tooltip: {
                 pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
-                valueDecimals: 2,
+                valueDecimals: 20,
                 split: true
             },
             xAxis: {
@@ -309,52 +293,26 @@ var LIBRARY_OBJECT = (function () {
     }
     
     function getWQgraph() {
-
-        var jobj = {
-            collection: "users/kimlotte423/LS8_LV_tsiR",
-            scale: 300,
-            geometry: JSON.stringify(convertLGeometry(map.getBounds())),
-            start_time: $("#time_start").val(),
-            end_time: $("#time_end").val()
-        };
-        console.log(jobj);
-        time_series_request(jobj);
-    }
-
-    function convertLGeometry(lgeo) {
-        //{"_southWest":{"lat":-2.6193264079798597,"lng":30.421142578125004},"_northEast":{"lat":1.2248822742251262,"lng":36.57897949218751}}
-        var slong = 30.421142578125004;
-        var llong = 36.57897949218751;
-        var slat = -2.6193264079798597;
-        var llat = 1.2248822742251262;
-        /*
-         var c1 = [slong, slat];
-        var c2 = [llong, slat];
-        var c3 = [llong, llat];
-        var c4 = [slong, llat];
-        */
-
-        //var c1 = [];
-        //c1.push(slong);
-        //c1.push(slat);
-        //var c2 = [];
-        //c2.push(llong);
-        //c2.push(slat);
-        //var c3 = [];
-        //c3.push(llong);
-        //c3.push(llat);
-        //var c4 = [];
-        //c4.push(slong);
-        //c4.push(llat);
-
-        //var coords = new Array();
-        //coords.push(c1);
-        //coords.push(c2);
-        //coords.push(c3);
-        //coords.push(c4);
-        //coords.push(c1);
-        var coords = [[29.894236790265268, -4.115375846540574], [35.51923679026527, -4.115375846540574], [35.51923679026527, 1.1544403583625271], [29.894236790265268, 1.1544403583625271], [29.894236790265268, -4.115375846540574]];
-        return coords;
+        if (createdPolyCoords) {
+            var gString;
+            if (createdPolyCoords.geometry.type === "Point") {
+                gString = JSON.stringify(createdPolyCoords.geometry.coordinates);
+            } else {
+                gString = JSON.stringify(createdPolyCoords.geometry.coordinates[0]);
+            }
+            var jobj = {
+                collection: "users/kimlotte423/LS8_LV_tsiR",
+                scale: 250,
+                geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
+                start_time: $("#time_start").val(),
+                end_time: $("#time_end").val()
+            };
+            console.log(jobj);
+            time_series_request(jobj);
+        } else {
+            alert("Please draw an area of interest");
+        }
+        
     }
 
     function fillSensorOptions() {
