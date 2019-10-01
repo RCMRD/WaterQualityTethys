@@ -117,3 +117,27 @@ def get_timeseries(request):
             return_obj["error"] = "Error Processing Request. Error: "+ str(e)
 
     return JsonResponse(return_obj)
+
+def get_imageCollection(request):
+    return_obj = {}
+
+    if request.method == "POST":
+        try:
+            info = request.POST
+            collection = info.get('collection')
+            visParams = json.loads(info.get('visparams', None))
+            reducer = info.get('reducer', None)
+            time_start = info.get('start_time', None)
+            time_end = info.get('end_time', None)
+
+            url = wq.getImageCollectionAsset(collection, visParams, reducer, time_start, time_end)
+
+            return_obj = {
+                    'url': url,
+                    'success': 'success'
+                }
+
+        except Exception as e:
+            return_obj["error"] = "Error Processing Request. Error: "+ str(e)
+
+    return JsonResponse(return_obj)

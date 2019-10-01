@@ -385,16 +385,51 @@ class modis(object):
           tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
           return tile_url_template.format(**map_id)
 
+def imageToMapId(imageName, visParams={}):
+    """  """
+    try:
+        eeImage = ee.Image(imageName)
+        mapId = eeImage.getMapId(visParams)
+        values = {
+            'mapid': mapId['mapid'],
+            'token': mapId['token']
+        }
+    except EEException as e:
+        print(str(e))
+        print("******imageToMapId error************", sys.exc_info()[0])
+    return values
+
+def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None):
+    try:
+        values = None
+        eeCollection = ee.ImageCollection(collectionName)
+        if (dateFrom and dateTo):
+            eeFilterDate = ee.Filter.date(dateFrom, dateTo)
+            eeCollection = eeCollection.filter(eeFilterDate)
+        if(reducer == 'min'):
+            values = imageToMapId(eeCollection.min(), visParams)
+        elif (reducer == 'max'):
+            values = imageToMapId(eeCollection.max(), visParams)
+        elif (reducer == 'mosaic'):
+            values = imageToMapId(eeCollection.mosaic(), visParams)
+        else:
+            values = imageToMapId(eeCollection.mean(), visParams)
+        
+    except EEException as e:
+        print(str(e))
+        print(str(sys.exc_info()[0]))
+        raise Exception(sys.exc_info()[0])
+    tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
+    return tile_url_template.format(**values)
+
 def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[], dateFrom=None, dateTo=None, reducer=None):
     """  """
     try:
         geometry = None
         indexCollection = None
         if isinstance(coords[0], list):
-            print("polygon")
             geometry = ee.Geometry.Polygon(coords)
         else:
-            print("point")
             geometry = ee.Geometry.Point(coords)
         if(dateFrom != None):
             if indexName != None:
@@ -403,30 +438,28 @@ def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[
                 indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo)
         else:
             indexCollection = ee.ImageCollection(collectionName)
-        print("past ic")
         def getIndex(image):
             """  """
-            theReducer = None;
+            theReducer = None
+            indexValue = None
             if(reducer == 'min'):
                 theReducer = ee.Reducer.min()
             elif (reducer == 'max'):
                 theReducer = ee.Reducer.max()
+            elif (reducer == 'mosaic'):
+                theReducer = ee.Reducer.mosaic()
             else:
                 print("reducer was mean")
                 theReducer = ee.Reducer.mean()
             if indexName != None:
                 indexValue = image.reduceRegion(theReducer, geometry, scale).get(indexName)
             else:
-                print("no indexName requested, will get all")
                 indexValue = image.reduceRegion(theReducer, geometry, scale)
-                print(str(indexValue))
             date = image.get('system:time_start')
             indexImage = ee.Image().set('indexValue', [ee.Number(date), indexValue])
-            print(str(indexValue))
             return indexImage
         indexCollection1 = indexCollection.map(getIndex)
         indexCollection2 = indexCollection1.aggregate_array('indexValue')
-        print("past agg")
         values = indexCollection2.getInfo()
         print("I have values")
     except Exception as e:

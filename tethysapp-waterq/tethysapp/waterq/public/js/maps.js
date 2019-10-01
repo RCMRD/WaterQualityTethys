@@ -1,4 +1,4 @@
-var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly;
+var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly, gtoggleCompareMap, gbounds;
 var LIBRARY_OBJECT = (function () {
     // Global Variables
     var map,
@@ -8,7 +8,8 @@ var LIBRARY_OBJECT = (function () {
         map2Layer,
         modalChart,
         drawnlayer,
-        createdPolyCoords;
+        createdPolyCoords,
+        chart;
     
     // Global Functions
     var init_vars,
@@ -34,15 +35,21 @@ var LIBRARY_OBJECT = (function () {
         modalChart = $("#chart-modal");
         platform = [{
             type: "modis",
-            options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option><option value='others'>here</option>"
+            options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option><option value='others'>here</option>",
+            corrections: "<option value='rrs'>RRS</option><option value='toa'>TOA</option>",
+            products: "<option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option>"
         },
         {
             type: "sentinel",
-            options: "<option value='sentinel1'>1</option><option value='sentinel2'>2</option><option value='others'>here</option>"
+            options: "<option value='1'>1</option><option value='2'>2</option><option value='others'>here</option>",
+            corrections: "<option value='tbd'>TBD</option><option value='notsure'>Not Sure</option>",
+            products: "<option value='tbd'>TBD</option>"
         },
         {
             type: "landsat",
-            options: "<option value='landsat7'>7</option><option value='landsat8'>8</option><option value='others'>here</option>"
+            options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
+            corrections: null,
+            products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsiR'>tsiR</option>"
         }
         ];
         return;
@@ -61,16 +68,13 @@ var LIBRARY_OBJECT = (function () {
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        //map.on('move', movesync);
-
 
         map2 = L.map('map2').setView([-0.7, 33.5], 8.4);
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map2);
-        //map2.on('move', movesync2);
+
         map.sync(map2);
-        map2.sync(map);
         gmap = map;
         gmap2 = map2;
         var editableLayers = new L.FeatureGroup();
@@ -116,7 +120,7 @@ var LIBRARY_OBJECT = (function () {
             $loading.css('display', "inline-block");
             var xhr = $.ajax({
                 type: "POST",
-                url: 'get_map/',
+                url: 'get_imageCollection/',
                 dataType: "json",
                 data: data_dict
             });
@@ -131,17 +135,27 @@ var LIBRARY_OBJECT = (function () {
                 }
             });
             return;
+            
         };
 
         time_series_request = function (data_dict) {
             var debug = false;
             if (debug) {
                 $("#chart-modal").modal('show');
+                $("#view-file-loading").show();
                 $.getJSON("https://cdn.jsdelivr.net/gh/highcharts/highcharts@v7.0.0/samples/data/usdeur.json", function (data) {
                     plotData(data);
                 });
             } else {
-                $loading.css('display', "inline-block");
+                if (chart) {
+                    while (chart.series.length > 0) {
+                        chart.series[0].remove(true);
+                    }
+                    chart.destroy();
+                    chart = null;
+                }
+                $("#chart-modal").modal('show');
+                $("#view-file-loading").toggleClass("hidden");
                 var xhr = $.ajax({
                     type: "POST",
                     url: 'get_timeseries/',
@@ -150,13 +164,13 @@ var LIBRARY_OBJECT = (function () {
                 });
                 xhr.done(function (data) {
                     if ("success" in data) {
-                        $("#chart-modal").modal('show');
+                        //$("#chart-modal").modal('show');
                         gdata = data;
                         console.log(convertData(data.timeseries));
                         plotData(convertData(data.timeseries));
-                        $loading.css('display', 'none');
+                        $("#view-file-loading").toggleClass("hidden");
                     } else {
-                        $loading.css('display', 'none');
+                        $("#view-file-loading").toggleClass("hidden");
                         alert('Opps, there was a problem processing the request. Please see the following error: ' + data.error);
                     }
                 });
@@ -234,12 +248,14 @@ var LIBRARY_OBJECT = (function () {
                         }
                     },
                     threshold: null
-                }
+                },
+                connectNulls:true
             },
             series: [{
                 type: 'area',
                 name: 'The Values',
-                data: data
+                data: data,
+                connectNulls:true
             }],
             credits: {
                 enabled: false
@@ -261,12 +277,8 @@ var LIBRARY_OBJECT = (function () {
     };
 
     function getWQMap(which, num) {
-        var workingLayer;
-        if (num === 1) {
-            workingLayer = map1Layer;
-        } else {
-            workingLayer = map2Layer;
-        }
+        var workingLayer = num === 1 ? map1Layer : map2Layer;
+        
         if (workingLayer) {
             wq_layer = workingLayer;
         } else {
@@ -283,15 +295,98 @@ var LIBRARY_OBJECT = (function () {
         }
         
         map_request({
-            platform: $("#platform").val(),
-            sensor: $("#sensor").val(),
-            correction: $("#correction").val(),
-            product: $("#product").val(),
+            collection: getCollection(),
+            reducer: "mosaic",
+            visparams: getVisParams(),
             start_time: $("#time_start").val(),
             end_time: $("#time_end").val()
         }, workingLayer, which);
     }
-    
+
+    function toggleCompareMap() {
+        if (document.getElementById("map").classList.contains("mapfull")) {
+            //make split view
+            var bounds = map.getBounds();
+            gbounds = bounds;
+            $("#map2").show();
+            $("#map").removeClass("mapfull");
+            map.invalidateSize();
+            map2.invalidateSize();
+            $("#rmapLoad").show();
+            $("#lmapLoad").text("Left");
+            $("#splitMap").text("Unsplit");
+            map.fitBounds(bounds);
+            map2.sync(map);
+        } else {
+            //make full view
+            var bounds = map.getBounds();
+            $("#map2").hide();
+            $("#map").addClass("mapfull");
+            map.invalidateSize();
+            $("#rmapLoad").hide();
+            $("#lmapLoad").text("Load");
+            $("#splitMap").text("Split");
+            map2.unsync(map);
+            map.fitBounds(bounds);
+        }
+    }
+
+    gtoggleCompareMap = toggleCompareMap;
+
+    function getVisParams() {
+        if ($("#product").val() === "chlor") {
+            return JSON.stringify({
+                "min": "0",
+                "max": "500",
+                "palette": "00FFFF,0000FF"
+            });
+        } else if ($("#product").val() === "sd") {
+            return JSON.stringify({
+                "min": "0",
+                "max": "5",
+                "palette": "00FFFF,0000FF"
+            });
+        } else if ($("#product").val() === "lst") {
+            return JSON.stringify({
+                "min": "0",
+                "max": "50",
+                "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
+            });
+        } else if ($("#product").val() === "tsi" ) {
+            return JSON.stringify({
+                "min": "0",
+                "max": "100",
+                "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
+            });
+        } else if ($("#product").val() === "tsiR") {
+            return JSON.stringify({
+                "min": "0",
+                "max": "10",
+                "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
+            });
+        }else if ($("#product").val() === "rrs") {
+            return JSON.stringify({
+                "min": "0",
+                "max": "50"
+                //, this will need to request bands
+                //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
+            });
+        }
+    }
+
+    function getCollection() {
+        var platform = $("#platform").val() === "modis"
+            ? "mod"
+            : $("#platform").val() === "sentinel"
+                ? "sen"
+                : $("#platform").val() === "landsat"
+                    ? "LS"
+                    : "Error";
+        var sensor = $("#sensor").val();
+        var product = $("#product").val();
+        var user = $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+        return "users/" + user + "/" + platform + sensor + "_VTM_" + product;
+    }
     function getWQgraph() {
         if (createdPolyCoords) {
             var gString;
@@ -300,8 +395,19 @@ var LIBRARY_OBJECT = (function () {
             } else {
                 gString = JSON.stringify(createdPolyCoords.geometry.coordinates[0]);
             }
+            var platform = $("#platform").val() === "modis"
+                ? "mod"
+                : $("#platform").val() === "sentinel"
+                    ? "sen"
+                    : $("#platform").val() === "landsat"
+                        ? "LS"
+                        : "Error"; 
+            var sensor = $("#sensor").val();
+            var product = $("#product").val();
+            var user = $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+            console.log(user);
             var jobj = {
-                collection: "users/kimlotte423/LS8_LV_tsiR",
+                collection: getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
                 scale: 250,
                 geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
                 start_time: $("#time_start").val(),
@@ -311,18 +417,41 @@ var LIBRARY_OBJECT = (function () {
             time_series_request(jobj);
         } else {
             alert("Please draw an area of interest");
-        }
-        
+        } 
     }
 
     function fillSensorOptions() {
         $('#sensor').empty().append(getSensorsByPlatform($("#platform").val())[0].options);
+        var corrections = getSensorsByPlatform($("#platform").val())[0].corrections;
+        if (corrections) {
+            $("#correctionSelect").show();
+            $('#correction').empty().append(getSensorsByPlatform($("#platform").val())[0].corrections);
+        } else {
+            $("#correctionSelect").hide();
+        }
+        $('#product').empty().append(getSensorsByPlatform($("#platform").val())[0].products);
     }
 
     function getSensorsByPlatform(which) {
         return platform.filter(function (p) {
             return p.type == which;
         });
+    }
+
+    function getCorrectionsByPlatform(which) {
+        return platform.filter(function (p) {
+            return p.corrections == which;
+        });
+    }
+
+    function getProductsByPlatform(which) {
+        return platform.filter(function (p) {
+            return p.products == which;
+        });
+    }
+
+    function goHome() {
+        document.location = $("#apppath").val();
     }
 
     $(function () {
@@ -334,14 +463,31 @@ var LIBRARY_OBJECT = (function () {
         $("#lmapLoad").on("click", function () {
             getWQMap(map, 1);
         });
+
+        $("#splitMap").on("click", function () {
+            toggleCompareMap();
+        });
+
         $("#rmapLoad").on("click", function () {
-            getWQMap(map2, 2);
+            if (document.getElementById("map").classList.contains("mapfull")) {
+                toggleCompareMap();
+            }
+            getWQMap(map2, 2);            
         });
 
         $("#graphLoad").on("click", function () {
             getWQgraph();
         });
-        
+
+        $(".icon-wrapper").on("click", function () {
+            // go home
+            goHome();
+        });
+
+        $(".app-title-wrapper").on("click", function () {
+            // go home
+            goHome();
+        });
 
         $('[name="master"]').change(function () {
             fillSensorOptions();

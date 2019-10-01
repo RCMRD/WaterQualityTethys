@@ -11,7 +11,7 @@ class Waterq(TethysAppBase):
     icon = 'waterq/images/icon.png'
     package = 'waterq'
     root_url = 'waterq'
-    color = '#3F3C3C'
+    color = '#202020'
     description = 'Place a brief description of your app here.'
     tags = 'Timeseries, Water Quality, Chlorophyll, Temperature'
     enable_feedback = False
@@ -58,6 +58,11 @@ class Waterq(TethysAppBase):
                 name='get_chart',
                 url='waterq/charts/get_chart',
                 controller='waterq.ajax_controller.get_chart'
+            ),
+            UrlMap(
+                name='get_imageCollection',
+                url='waterq/maps/get_imageCollection',
+                controller='waterq.ajax_controller.get_imageCollection'
             ),
         )
 

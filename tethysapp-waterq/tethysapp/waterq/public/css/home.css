@@ -16,6 +16,39 @@
     transform: translate3d(0px,0,0);
 }
 
+.buttontheme {
+    background-color: #fff;
+    color: #555;
+    border: solid 1px rgb(39, 40, 41);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 0.875rem;
+    height: 3rem;
+    font-family: "Fira Sans", sans-serif;
+    border-radius: 1.25rem;
+    padding: 0 0.9375rem;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    -webkit-transition: background-color 150ms ease-out;
+    transition: background-color 150ms ease-out;
+    text-decoration: none !important;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
 #app-navigation {
     display: none;
 }
@@ -27,7 +60,7 @@
 h2.chead, h2.title {
     background: #3F3C3C;
     color: #FFF;
-    font-size: 13px;
+    font-size: 18px;
     line-height: 21px;
     padding: 8px 0 6px;
     font-weight: 700;
@@ -35,6 +68,18 @@ h2.chead, h2.title {
     border-top-left-radius: 8px;
     box-shadow: 3px 3px 0 silver;
     text-align: center;
+}
+
+.hero-image {
+    background-image: url("/static/waterq/images/hglobe.jpg"); /* The image used */
+    background-color: black; /* Used if the image is unavailable */
+    height: 500px; /* You must set a specified height */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .rowContainers {
@@ -79,22 +124,30 @@ h2.chead, h2.title {
 }
 
 .jumbobox {
-    position: absolute;
+    
     background: 0 0;
     color: #fff;
     width: 500px;
-    bottom: 80px;
+    top: calc(50% - 32px);
     font-size: 32px;
     text-shadow: 2px 2px rgba(61,88,109,.75);
     font-weight: 600;
     text-align: center;
-    margin: 0 50% 0 Calc(-50% - 250px);
+    
     display: inline-block;
-    background-color: rgba(82,177,250,.8);
+    background-color: rgba(39, 40, 41, 0.8);
     padding: 20px;
     border-radius: 20px;
     webkit-box-shadow: 3px -10px 3px rgba(0,0,0,.35);
     box-shadow: 3px 5px 3px rgba(0,0,0,.35);
+}
+
+.jumbobox a {
+    color: #fff;
+    font-size: 32px;
+    text-shadow: 2px 2px rgba(61,88,109,.75);
+    font-weight: 600;
+    text-decoration: none;
 }
 
 #credits {

@@ -97,8 +97,9 @@
 <br>
 <div>
     <p data-toggle="tooltip">Set variables then click button below to load right or left map.</p>
-    <button id="lmapLoad">Load left</button>
-    <button id="rmapLoad">Load right</button>
+    <button id="lmapLoad">Load</button>
+    <button id="splitMap">Split</button>
+    <button id="rmapLoad" style="display:none;">Right</button>
     <p>Draw AOI or drop a point for the graph data</p>
     <button id="graphLoad">Load graph</button>
 </div>
@@ -106,13 +107,14 @@
 {% endblock %}
 
 {% block app_content %}
-<div id="map"></div>
-<div id="map2"></div>
+<div id="map" class="mapfull"></div>
+<div id="map2" style="display:none;"></div>
 
 
     {% endblock %}
 
     {% block after_app_content %}
+<input type="hidden" id="apppath" value="{% url 'waterq:home' %}" />
 <!-- Modal -->
 <div class="modal fade" id="chart-modal" tabindex="-1" role="dialog" aria-labelledby="chart-modal-label">
     <div class="modal-dialog" role="document">
@@ -125,7 +127,7 @@
                 <div class="error"></div>
                 <div class="chart-wrapper">
                     <div class="chart-inner" style="width:100%;height:100%;">
-                        <div align="center"><img id="view-file-loading" class="view-file hidden" src="/static/hiwat/images/loader.gif" /></div>
+                        <div align="center"><img id="view-file-loading" class="view-file hidden" src="{% static 'waterq/images/loader.gif' %}" /></div>
                         <div align="center" id="cube" class="sk-cube-grid hidden">
                             <div class="sk-cube sk-cube1"></div>
                             <div class="sk-cube sk-cube2"></div>
