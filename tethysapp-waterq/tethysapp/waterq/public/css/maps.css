@@ -3,6 +3,23 @@ body {
     font-family: Muli;
 }
 
+.leaflet-bar {
+    border: 1px solid rgb(6, 126, 245) !important;
+}
+
+.leaflet-bar a, .leaflet-bar a:hover {
+    color: #044777;
+    border-color: rgb(6, 126, 245) !important;
+}
+
+.leaflet-touch .leaflet-control-layers, leaflet-touch .leaflet-bar {
+    border: 1px solid rgb(6, 126, 245)!important;
+}
+
+.leaflet-draw-toolbar a {
+    background-image: linear-gradient(transparent, transparent), url(images/spritesheet.svg)!important;
+}
+
 .icon-wrapper, .app-title-wrapper {
     cursor:pointer;
 }

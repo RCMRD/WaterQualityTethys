@@ -16,39 +16,6 @@
     transform: translate3d(0px,0,0);
 }
 
-.buttontheme {
-    background-color: #fff;
-    color: #555;
-    border: solid 1px rgb(39, 40, 41);
-    text-transform: uppercase;
-    font-weight: 600;
-    font-size: 0.875rem;
-    height: 3rem;
-    font-family: "Fira Sans", sans-serif;
-    border-radius: 1.25rem;
-    padding: 0 0.9375rem;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    -webkit-transition: background-color 150ms ease-out;
-    transition: background-color 150ms ease-out;
-    text-decoration: none !important;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
-}
-
 #app-navigation {
     display: none;
 }

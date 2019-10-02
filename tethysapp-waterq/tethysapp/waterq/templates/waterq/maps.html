@@ -52,7 +52,7 @@
     <p id="master">
         <span class="optTitle">Satellite Platform:</span>
         <br>
-        <select name="master" id="platform" class="selectors">
+        <select name="master" id="platform" class="selectors buttontheme" style="width:98%;">
             <option value="modis" selected> Modis</option>
             <option value="sentinel">Sentinel</option>
             <option value="landsat">Landsat</option>
@@ -61,7 +61,7 @@
     <p id="sensorSelect">
         <span class="optTitle" id="missionTitle">Sensor:</span>
         <br>
-        <select name="sensor" id="sensor" class="selectors">
+        <select name="sensor" id="sensor" class="selectors buttontheme" style="width:98%;">
             <option value="aqua" selected>Aqua</option>
             <option value="terra">Terra</option>
             <option value="others">here</option>
@@ -70,7 +70,7 @@
     <p id="correctionSelect">
         <span class="optTitle">Correction Type:</span>
         <br>
-        <select name="correction" id="correction" class="selectors">
+        <select name="correction" id="correction" class="selectors buttontheme" style="width:98%;">
             <option value="rrs" selected>RRS</option>
             <option value="toa">TOA</option>
         </select>
@@ -78,7 +78,7 @@
     <p id="productSelect">
         <span class="optTitle">Product:</span>
         <br>
-        <select name="product" id="product" class="selectors">
+        <select name="product" id="product" class="selectors buttontheme" style="width:98%;">
             <option value="chla" selected>CHL_A</option>
             <option value="sd">Secchi Depth</option>
         </select>
@@ -96,12 +96,13 @@
 </form>
 <br>
 <div>
-    <p data-toggle="tooltip">Set variables then click button below to load right or left map.</p>
-    <button id="lmapLoad">Load</button>
-    <button id="splitMap">Split</button>
-    <button id="rmapLoad" style="display:none;">Right</button>
-    <p>Draw AOI or drop a point for the graph data</p>
-    <button id="graphLoad">Load graph</button>
+    <p data-toggle="tooltip">Set variables then add data to the map.  Use the split button to add an additional map in the viewport, then set the variables to load either right or left map.</p>
+    <a id="lmapLoad" class="buttontheme" style="float:left; margin:1px;">Load</a>
+    <a id="splitMap" class="buttontheme" style="float:left; margin:1px;">Split</a>
+    <a id="rmapLoad" class="buttontheme" style="display:none; float:left; margin:1px;">Right</a>
+    <br style="clear:both;" />
+    <p style="margin:10px 0">Draw AOI or drop a point for the graph data</p>
+    <a id="graphLoad" class="buttontheme">Graph variables</a>
 </div>
 
 {% endblock %}

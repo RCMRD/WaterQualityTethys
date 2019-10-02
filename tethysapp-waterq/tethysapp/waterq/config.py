@@ -64,7 +64,8 @@ buttons = {
         start_view='decade',
         today_button=True,
         initial='2015-08-01',
-        attributes={'class':'hide'}
+        attributes={'class':'hide'},
+        classes='buttontheme'
     ),
     "end_time":DatePicker(
         name='time_end',
@@ -73,7 +74,8 @@ buttons = {
         start_view='decade',
         today_button=True,
         initial='2015-09-01',
-        attributes={'class':'hide'}
+        attributes={'class':'hide'},
+        classes='buttontheme'
     ),
     "download_button": Button(
         display_text='Download Region',
