@@ -43,8 +43,11 @@
 {% endblock %}
 
 {% block header_buttons %}
-
+<div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="Help">
+    <a data-toggle="modal" data-target="#help-modal"><span class="glyphicon glyphicon-question-sign"></span></a>
+</div>
 {% endblock %}
+
 
 {% block app_navigation_items %}
 <li class="title">App Navigation</li>
@@ -116,6 +119,36 @@
 
     {% block after_app_content %}
 <input type="hidden" id="apppath" value="{% url 'waterq:home' %}" />
+
+<!-- Help Modal -->
+<div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title" id="help-modal-label">Help</h5>
+            </div>
+            <div class="modal-body">
+                <h1>Disclaimer:</h1>
+                <p>This application is currently in Beta. It is not to be used for any operational purpose.The SERVIR Project, NASA, and USAID, make no express or implied warranty of this application and associated data as to the merchantability or fitness for a particular purpose. Neither the US Government nor its contractors shall be liable for special, consequential or incidental damages attributed to this application and associated data.</p>
+                <p><a href="https://servirglobal.net/Privacy-Terms-of-Use" target="_blank">Privacy and Terms of Use</a></p>
+                <p>For questions, comments and/or concerns <a href="https://servirglobal.net/contact-us">contact us</a> (please reference the Water Quality Viewer)</p>
+            </div>
+            <div class="modal-footer">
+                <div align="center" id="logos">
+                    <div class="logo-image"><a href="http://www.usaid.gov/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/usaid.png"></a></div>
+                    <div class="logo-image"><a href="http://appliedsciences.nasa.gov/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/nasa.png"></a></div>
+                    <div class="logo-image"><a href="http://www.cilss.bf/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/cilss.png"></a></div>
+                    <div class="logo-image"><a href="http://www.rcmrd.org/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/rcmrd.png"></a></div>
+                    <div class="logo-image"><a href="http://www.icimod.org/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/icimod.png"></a></div>
+                    <div class="logo-image"><a href="http://www.adpc.net/" target="_blank"><img src="https://servirglobal.net/Portals/_default/Skins/Servir2015/img/adpc.png"></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Modal -->
 <div class="modal fade" id="chart-modal" tabindex="-1" role="dialog" aria-labelledby="chart-modal-label">
     <div class="modal-dialog" role="document">

@@ -1,3 +1,6 @@
+body {
+    font-family: Muli;
+}
 .buttontheme {
     background-color: #fff;
     color: #044777; /*#555;*/
@@ -6,7 +9,7 @@
     font-weight: 600;
     font-size: 0.875rem;
     height: 3rem;
-    font-family: "Fira Sans", sans-serif;
+    font-family: Muli;
     border-radius: 1.25rem;
     padding: 0 0.9375rem;
     display: -webkit-box;
@@ -30,3 +33,19 @@
     width: -moz-fit-content;
     width: fit-content;
 }
+#logos {
+    padding: 5px 0;
+    white-space: nowrap;
+    width: 100%;
+    display: table;
+}
+
+.logo-image {
+    vertical-align: middle;
+    display: table-cell;
+    padding: 0 2px;
+}
+
+    .logo-image img {
+        max-width: 100%;
+    }
