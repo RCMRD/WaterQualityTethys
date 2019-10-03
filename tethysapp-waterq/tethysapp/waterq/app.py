@@ -13,7 +13,7 @@ class Waterq(TethysAppBase):
     root_url = 'waterq'
     color = '#202020'
     description = 'Place a brief description of your app here.'
-    tags = 'Timeseries, Water Quality, Chlorophyll, Temperature'
+    tags = 'Timeseries,Water Quality,Chlorophyll,Temperature'
     enable_feedback = False
     feedback_emails = []
 
