@@ -15,7 +15,7 @@ dependencies = []
 setup(
     name=release_package,
     version='0.0.1',
-    tags='Timeseries, Water Quality, Chlorophyll, Temperature',
+    tags='Timeseries,Water Quality,Chlorophyll,Temperature',
     description='',
     long_description='',
     keywords='',
