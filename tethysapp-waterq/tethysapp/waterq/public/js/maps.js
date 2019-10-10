@@ -24,7 +24,8 @@ var LIBRARY_OBJECT = (function () {
         createSelect,
         createP,
         createCascade,
-        map_request;
+        map_request,
+        loadMap;
     // Define IDs for the map and chart html tags
     init_vars = function () {
 
@@ -66,12 +67,18 @@ var LIBRARY_OBJECT = (function () {
         };
         map = L.map('map').setView([-0.7, 33.5], 8.4);
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            updateWhenIdle: false,
+            updateWhenZooming: false,
+            updateInterval: 500
         }).addTo(map);
 
         map2 = L.map('map2').setView([-0.7, 33.5], 8.4);
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            updateWhenIdle: false,
+            updateWhenZooming: false,
+            updateInterval: 500
         }).addTo(map2);
 
         map.sync(map2);
@@ -138,25 +145,39 @@ var LIBRARY_OBJECT = (function () {
     init_events = function () {
         map_request = function (data_dict, layer, map) {
             $loading.css('display', "inline-block");
-            var xhr = $.ajax({
-                type: "POST",
-                url: 'get_imageCollection/',
-                dataType: "json",
-                data: data_dict
-            });
-            xhr.done(function (data) {
-                if ("success" in data) {
-                    layer.setUrl(data.url);
-                    layer.addTo(map);
-                    $loading.css('display', 'none');
-                } else {
-                    $loading.css('display', 'none');
-                    alert('Opps, there was a problem processing the request. Please see the following error: ' + data.error);
-                }
-            });
+            var mapInfo = isCached(data_dict);
+            if (mapInfo) {
+                loadMap(JSON.parse(mapInfo), layer, map);
+            } else {
+                var xhr = $.ajax({
+                    type: "POST",
+                    url: 'get_imageCollection/',
+                    dataType: "json",
+                    data: data_dict,
+                    cache: data_dict
+                });
+                xhr.done(function (data) {
+                    if ("success" in data) {
+                        if (typeof (Storage) !== "undefined") {
+                            data.lastGatewayUpdate = new Date();
+                            localStorage.setItem(JSON.stringify(this.cache), JSON.stringify(data));
+                        }
+                        loadMap(data, layer, map);
+                    } else {
+                        $loading.css('display', 'none');
+                        alert('Opps, there was a problem processing the request. Please see the following error: ' + data.error);
+                    }
+                });
+            }
             return;
             
         };
+
+        loadMap = function (data, layer, map) {
+            layer.setUrl(data.url);
+            layer.addTo(map);
+            $loading.css('display', 'none');
+        }
 
         time_series_request = function (data_dict) {
             var debug = false;
@@ -184,7 +205,6 @@ var LIBRARY_OBJECT = (function () {
                 });
                 xhr.done(function (data) {
                     if ("success" in data) {
-                        //$("#chart-modal").modal('show');
                         gdata = data;
                         console.log(convertData(data.timeseries));
                         plotData(convertData(data.timeseries));
@@ -203,7 +223,6 @@ var LIBRARY_OBJECT = (function () {
 
     function convertData(data) {
         return data.map(function (d) {
-            //var v2 = d[1].constant !== null ? d[1].constant : d[1].NDVI !== null
             return [d[0], d[1][Object.keys(d[1])[0]]];
         });
     }
@@ -316,11 +335,28 @@ var LIBRARY_OBJECT = (function () {
         
         map_request({
             collection: getCollection(),
-            reducer: "mosaic",
+            reducer: "mean",
             visparams: getVisParams(),
             start_time: $("#time_start").val(),
             end_time: $("#time_end").val()
         }, workingLayer, which);
+    }
+
+    function isCached(data_dict) {
+        if (typeof (Storage) !== "undefined") {
+            if (localStorage.getItem(JSON.stringify(data_dict))) {
+                var currentDate = new Date();
+                currentDate.setDate(currentDate.getDate() - 1);
+                var ls_item = JSON.parse(localStorage.getItem(JSON.stringify(data_dict)));
+                if (new Date(ls_item.lastGatewayUpdate) > currentDate) {
+                    return localStorage.getItem(JSON.stringify(data_dict));
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
     }
 
     function toggleCompareMap() {
