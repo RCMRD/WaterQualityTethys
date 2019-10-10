@@ -49,7 +49,7 @@ var LIBRARY_OBJECT = (function () {
             type: "landsat",
             options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
             corrections: null,
-            products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsiR'>tsiR</option>"
+            products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsiR'>tsiR</option><option value='ndvi'>NDVI</option>"
         }
         ];
         return;
@@ -384,14 +384,20 @@ var LIBRARY_OBJECT = (function () {
                 "max": "10",
                 "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
-        }else if ($("#product").val() === "rrs") {
+        } else if ($("#product").val() === "rrs") {
             return JSON.stringify({
                 "min": "0",
                 "max": "50"
                 //, this will need to request bands
                 //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
             });
-        }
+        } else if ($("#product").val() === "ndvi") {
+        return JSON.stringify({
+            "min": "-1",
+            "max": "1",
+            "palette": "0006bf,0313ac,062099,092d86,0d3a73,104760,13544d,17613a,1a6e27,1d7b14,218802"
+        });
+    }
     }
 
     function getCollection() {
@@ -404,7 +410,10 @@ var LIBRARY_OBJECT = (function () {
                     : "Error";
         var sensor = $("#sensor").val();
         var product = $("#product").val();
-        var user = $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+        var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+        if (user === "billyz313") {
+            return "users/billyz313/tmvlakes";
+        }
         return "users/" + user + "/" + platform + sensor + "_VTM_" + product;
     }
     function getWQgraph() {
