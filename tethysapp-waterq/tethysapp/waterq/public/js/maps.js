@@ -203,7 +203,8 @@ var LIBRARY_OBJECT = (function () {
 
     function convertData(data) {
         return data.map(function (d) {
-            return [d[0], d[1].constant];
+            //var v2 = d[1].constant !== null ? d[1].constant : d[1].NDVI !== null
+            return [d[0], d[1][Object.keys(d[1])[0]]];
         });
     }
     gconvertData = convertData;
@@ -211,7 +212,6 @@ var LIBRARY_OBJECT = (function () {
     function plotData(data) {
         chart = Highcharts.stockChart('plotter', {
             chart: {
-                // type:'spline',
                 zoomType: 'x'
             },
             title: {
