@@ -38,6 +38,7 @@
 <script src="https://cdn.rawgit.com/mejackreed/Leaflet-IIIF/v2.0.1/leaflet-iiif.js"></script>
 <script src="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.js"></script>
 <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js" type="text/javascript"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="{% static 'waterq/js/main.js' %}" type="text/javascript"></script>
 <script src="{% static 'waterq/js/maps.js' %}" type="text/javascript"></script>
 {% endblock %}
@@ -106,6 +107,10 @@
     <br style="clear:both;" />
     <p style="margin:10px 0">Draw AOI or drop a point for the graph data</p>
     <a id="graphLoad" class="buttontheme">Graph variables</a>
+</div>
+<br />
+<div>
+    <input type="file" onchange="gloadFile()" />
 </div>
 
 {% endblock %}

@@ -2,6 +2,15 @@ body {
     overflow: hidden;
     font-family: Muli;
 }
+.leaflet-container {
+    font: 12px/1.500 Muli;
+    color: #044777;
+}
+
+.leaflet-popup-content-wrapper {
+    border: 1px solid rgb(6,126,245);
+    color: #044777!important;
+}
 
 .leaflet-bar {
     border: 1px solid rgb(6, 126, 245) !important;

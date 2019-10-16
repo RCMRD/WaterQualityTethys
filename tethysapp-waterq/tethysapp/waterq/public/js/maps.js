@@ -1,4 +1,4 @@
-var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly, gtoggleCompareMap, gbounds;
+var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly, gtoggleCompareMap, gbounds, gloadFile, gfileData;
 var LIBRARY_OBJECT = (function () {
     // Global Variables
     var map,
@@ -207,6 +207,9 @@ var LIBRARY_OBJECT = (function () {
                     if ("success" in data) {
                         gdata = data;
                         console.log(convertData(data.timeseries));
+                        /*
+                        Highcharts is erroring saying it expects data to be sorted, check to see if it is or not
+                        */
                         plotData(convertData(data.timeseries));
                         $("#view-file-loading").toggleClass("hidden");
                     } else {
@@ -404,9 +407,9 @@ var LIBRARY_OBJECT = (function () {
             });
         } else if ($("#product").val() === "lst") {
             return JSON.stringify({
-                "min": "0",
-                "max": "50",
-                "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
+                "min": "-5",
+                "max": "112",
+                "palette": "0022c9,194bff,5d567c,b20000,f00a0a"
             });
         } else if ($("#product").val() === "tsi" ) {
             return JSON.stringify({
@@ -449,6 +452,9 @@ var LIBRARY_OBJECT = (function () {
         var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
         if (user === "billyz313") {
             return "users/billyz313/tmvlakes";
+        }
+        if ($("#product").val() === "lst") {
+            return "users/billyz313/LS8_VTM_lst";
         }
         return "users/" + user + "/" + platform + sensor + "_VTM_" + product;
     }
@@ -517,6 +523,46 @@ var LIBRARY_OBJECT = (function () {
 
     function goHome() {
         document.location = $("#apppath").val();
+    }
+
+    var reader = new FileReader();
+
+    function loadFile() {
+        var file = document.querySelector('input[type=file]').files[0];
+        reader.addEventListener("load", parseFile, false);
+        if (file) {
+            reader.readAsText(file);
+        }
+    }
+
+    gloadFile = loadFile;
+
+    function parseFile() {
+        var doesColumnExist = false;
+        console.log(reader.result);
+        var data = d3.csvParse(reader.result, function (d) {
+            doesColumnExist = d.hasOwnProperty("Date");
+            return d;
+        });
+        console.log(doesColumnExist);
+        gfileData = data;
+        data.forEach(addMarkers);
+    }
+
+    function addMarkers(data) {
+
+
+        var popuptxt = "";
+        var marker = L.marker([parseFloat(data.Lat), parseFloat(data.Lon)], { title: data.CAST }).addTo(map);
+        var marker2 = L.marker([parseFloat(data.Lat), parseFloat(data.Lon)], { title: data.CAST }).addTo(map2);
+        Object.keys(data).forEach(function (key) {
+            console.log(key);
+            if (key != "Lat" && key != "Lon") {
+                popuptxt += key + ": " + data[key] + "</br>";
+            }
+        });
+        marker.bindPopup(popuptxt);
+        marker2.bindPopup(popuptxt);
     }
 
     $(function () {
