@@ -50,7 +50,7 @@ var LIBRARY_OBJECT = (function () {
             type: "landsat",
             options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
             corrections: null,
-            products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsiR'>tsiR</option><option value='ndvi'>NDVI</option>"
+            products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsir'>tsiR</option><option value='ndvi'>NDVI</option>"
         }
         ];
         return;
@@ -205,12 +205,13 @@ var LIBRARY_OBJECT = (function () {
                 });
                 xhr.done(function (data) {
                     if ("success" in data) {
-                        gdata = data;
+                        gdata = sortData(convertData(data.timeseries));
                         console.log(convertData(data.timeseries));
                         /*
                         Highcharts is erroring saying it expects data to be sorted, check to see if it is or not
                         */
-                        plotData(convertData(data.timeseries));
+                       // sortData(
+                        plotData(gdata);
                         $("#view-file-loading").toggleClass("hidden");
                     } else {
                         $("#view-file-loading").toggleClass("hidden");
@@ -223,6 +224,14 @@ var LIBRARY_OBJECT = (function () {
         }
         return null;
     };
+    function Comparator(a, b) {
+        if (a[0] < b[0]) return -1;
+        if (a[0] > b[0]) return 1;
+        return 0;
+    }
+    function sortData(data) {
+        return data.sort(Comparator);
+    }
 
     function convertData(data) {
         return data.map(function (d) {
@@ -417,7 +426,7 @@ var LIBRARY_OBJECT = (function () {
                 "max": "100",
                 "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
-        } else if ($("#product").val() === "tsiR") {
+        } else if ($("#product").val() === "tsir") {
             return JSON.stringify({
                 "min": "0",
                 "max": "10",
@@ -449,13 +458,14 @@ var LIBRARY_OBJECT = (function () {
                     : "Error";
         var sensor = $("#sensor").val();
         var product = $("#product").val();
-        var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
-        if (user === "billyz313") {
+        //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+        var user = "billyz313";
+        if ($("#product").val() === "ndvi") {
             return "users/billyz313/tmvlakes";
         }
-        if ($("#product").val() === "lst") {
-            return "users/billyz313/LS8_VTM_lst";
-        }
+        //if ($("#product").val() === "lst") {
+        //    return "users/billyz313/LS8_VTM_lst";
+        //}
         return "users/" + user + "/" + platform + sensor + "_VTM_" + product;
     }
     function getWQgraph() {
