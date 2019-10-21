@@ -116,6 +116,15 @@ select {
 }
 
 @media (max-width: 768px) {
+    #app-navigation {
+        overflow: scroll;
+        max-height: 100vh;
+    }
+
+    #app-content-wrapper{
+        padding-top:50px;
+    } 
+    
     #app-content-wrapper #app-navigation {
         width: 0 !important;
         left: 100vw !important;
@@ -126,11 +135,20 @@ select {
         left: -100vw !important;
     }
 
+    #app-content-wrapper.show-nav-custom #app-navigation {
+        width: 100% !important;
+        left: -100vw !important;
+    }
+
     #app-content-wrapper #inner-app-content {
         width: 100%;
     }
 
     #app-content-wrapper.show-nav #inner-app-content {
+        width: 0;
+    }
+
+    #app-content-wrapper.show-nav-custom #inner-app-content {
         width: 0;
     }
 
@@ -144,6 +162,20 @@ select {
     }
 
     #app-content-wrapper.show-nav #app-content {
+        padding-right: 100vw;
+        -webkit-transform: translateX(100vw);
+        -moz-transform: translateX(100vw);
+        -ms-transform: translateX(100vw);
+        -o-transform: translateX(100vw);
+        transform: translateX(100vw);
+        -webkit-transform: translate3d(100vw,0,0);
+        -moz-transform: translate3d(100vw,0,0);
+        -ms-transform: translate3d(100vw,0,0);
+        -o-transform: translate3d(100vw,0,0);
+        transform: translate3d(100vw,0,0);
+    }
+
+    #app-content-wrapper.show-nav-custom #app-content {
         padding-right: 100vw;
         -webkit-transform: translateX(100vw);
         -moz-transform: translateX(100vw);

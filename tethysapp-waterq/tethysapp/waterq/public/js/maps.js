@@ -610,7 +610,14 @@ var LIBRARY_OBJECT = (function () {
             goHome();
         });
 
+        $("#app-content-wrapper").addClass("show-nav-custom");
+
         $(".toggle-nav").click(function () {
+            if ($("#app-content-wrapper").hasClass("show-nav")) {
+                $("#app-content-wrapper").addClass("show-nav-custom");
+            } else {
+                $("#app-content-wrapper").removeClass("show-nav-custom");
+            }
             window.setTimeout(function () {
                 map.invalidateSize();
                 map2.invalidateSize();
