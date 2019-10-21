@@ -610,12 +610,24 @@ var LIBRARY_OBJECT = (function () {
             goHome();
         });
 
+        $(".toggle-nav").click(function () {
+            window.setTimeout(function () {
+                map.invalidateSize();
+                map2.invalidateSize();
+            }, 500);
+        });
+
         $('[name="master"]').change(function () {
             fillSensorOptions();
         });
         if ($("#app-content").css('padding-right') === "0px") {
             $(".toggle-nav")[0].click();
         }
+        if ($("#ismobile").is(":visible")) {
+            $("#app-content-wrapper").addClass("show-nav");
+            map.invalidateSize();
+        }
+        // if ismobile add shownav class to app-content-wrapper
     });
     return public_interface;
 }());

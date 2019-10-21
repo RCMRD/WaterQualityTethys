@@ -2,6 +2,7 @@ body {
     overflow: hidden;
     font-family: Muli;
 }
+
 .leaflet-container {
     font: 12px/1.500 Muli;
     color: #044777;
@@ -9,28 +10,28 @@ body {
 
 .leaflet-popup-content-wrapper {
     border: 1px solid rgb(6,126,245);
-    color: #044777!important;
+    color: #044777 !important;
 }
 
 .leaflet-bar {
     border: 1px solid rgb(6, 126, 245) !important;
 }
 
-.leaflet-bar a, .leaflet-bar a:hover {
-    color: #044777;
-    border-color: rgb(6, 126, 245) !important;
-}
+    .leaflet-bar a, .leaflet-bar a:hover {
+        color: #044777;
+        border-color: rgb(6, 126, 245) !important;
+    }
 
 .leaflet-touch .leaflet-control-layers, leaflet-touch .leaflet-bar {
-    border: 1px solid rgb(6, 126, 245)!important;
+    border: 1px solid rgb(6, 126, 245) !important;
 }
 
 .leaflet-draw-toolbar a {
-    background-image: linear-gradient(transparent, transparent), url(images/spritesheet.svg)!important;
+    background-image: linear-gradient(transparent, transparent), url(images/spritesheet.svg) !important;
 }
 
 .icon-wrapper, .app-title-wrapper {
-    cursor:pointer;
+    cursor: pointer;
 }
 
 #inner-app-content {
@@ -59,8 +60,8 @@ body {
     float: left;
 }
 
-.mapfull{
-    width:100%!important;
+.mapfull {
+    width: 100% !important;
 }
 
 #map {
@@ -83,14 +84,14 @@ select {
     padding-bottom: 0;
 }
 
-#app-content-wrapper #app-content #app-navigation {
-    background-color: #E5E7E9;
-    box-shadow: 2px 5px 5px #868585;
-    z-index: 500;
-    height: calc(100vh - 2px);
-    left: -250px;
-    width: 250px;
-}
+    #app-content-wrapper #app-content #app-navigation {
+        background-color: #E5E7E9;
+        box-shadow: 2px 5px 5px #868585;
+        z-index: 500;
+        height: calc(100vh - 2px);
+        left: -250px;
+        width: 250px;
+    }
 
 .optTitle {
     font-weight: 700;
@@ -108,4 +109,69 @@ select {
     -ms-transform: translate3d(250px,0,0);
     -o-transform: translate3d(250px,0,0);
     transform: translate3d(250px,0,0);
+}
+
+#ismobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #app-content-wrapper #app-navigation {
+        width: 0 !important;
+        left: 100vw !important;
+    }
+
+    #app-content-wrapper.show-nav #app-navigation {
+        width: 100% !important;
+        left: -100vw !important;
+    }
+
+    #app-content-wrapper #inner-app-content {
+        width: 100%;
+    }
+
+    #app-content-wrapper.show-nav #inner-app-content {
+        width: 0;
+    }
+
+    #app-content-wrapper #app-content {
+        webkit-transition: .2s ease-in-out all;
+        -moz-transition: .2s ease-in-out all;
+        -o-transition: .2s ease-in-out all;
+        -ms-transition: .2s ease-in-out all;
+        transition: .2s ease-in-out all;
+        width: 100%;
+    }
+
+    #app-content-wrapper.show-nav #app-content {
+        padding-right: 100vw;
+        -webkit-transform: translateX(100vw);
+        -moz-transform: translateX(100vw);
+        -ms-transform: translateX(100vw);
+        -o-transform: translateX(100vw);
+        transform: translateX(100vw);
+        -webkit-transform: translate3d(100vw,0,0);
+        -moz-transform: translate3d(100vw,0,0);
+        -ms-transform: translate3d(100vw,0,0);
+        -o-transform: translate3d(100vw,0,0);
+        transform: translate3d(100vw,0,0);
+    }
+
+    #map, #map2 {
+        height: 50%;
+        width: 100%;
+        border-left: unset;
+    }
+
+    #map2 {
+        border-top: 2px solid;
+    }
+
+    .mapfull {
+        height: 100% !important;
+    }
+
+    #ismobile {
+        display: block;
+    }
 }
