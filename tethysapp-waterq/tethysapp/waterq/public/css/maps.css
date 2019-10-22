@@ -123,6 +123,7 @@ select {
 
     #app-content-wrapper{
         /*padding-top:50px;*/
+        overflow-x: scroll;
     } 
     
     #app-content-wrapper #app-navigation {
