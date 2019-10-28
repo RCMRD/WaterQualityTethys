@@ -133,6 +133,9 @@ var LIBRARY_OBJECT = (function () {
             createdPolyCoords = drawnlayer.toGeoJSON();
             gCreatedPoly = createdPolyCoords;
             editableLayers.addLayer(drawnlayer);
+            if ($("#ismobile").is(":visible")) {
+                $(".toggle-nav")[0].click();
+            }
         });
 
         map.on('draw:drawstart', function (e) {
@@ -577,27 +580,12 @@ var LIBRARY_OBJECT = (function () {
 
     $(function () {
         init_all();
-        $('[name="map-button"]').on("click", function () {
-            getWQMap();
-        });
-
-        $("#lmapLoad").on("click", function () {
-            getWQMap(map, 1);
-        });
-
+        //$('[name="map-button"]').on("click", function () {
+        //    getWQMap();
+        //});
+        
         $("#splitMap").on("click", function () {
             toggleCompareMap();
-        });
-
-        $("#rmapLoad").on("click", function () {
-            if (document.getElementById("map").classList.contains("mapfull")) {
-                toggleCompareMap();
-            }
-            getWQMap(map2, 2);            
-        });
-
-        $("#graphLoad").on("click", function () {
-            getWQgraph();
         });
 
         $(".icon-wrapper").on("click", function () {
@@ -633,6 +621,43 @@ var LIBRARY_OBJECT = (function () {
         if ($("#ismobile").is(":visible")) {
             $("#app-content-wrapper").addClass("show-nav");
             map.invalidateSize();
+            //attach show map to buttons 
+            $("#lmapLoad").on("click", function () {
+                getWQMap(map, 1);
+                $(".toggle-nav")[0].click();
+            });
+
+            $("#rmapLoad").on("click", function () {
+                if (document.getElementById("map").classList.contains("mapfull")) {
+                    toggleCompareMap();
+                }
+                getWQMap(map2, 2);
+                $(".toggle-nav")[0].click();
+            });
+
+            $("#graphLoad").on("click", function () {
+                getWQgraph();
+                if (createdPolyCoords) {
+                    $(".toggle-nav")[0].click();
+                }
+            });
+
+            // attach show panel to draw end event
+        } else {
+            $("#lmapLoad").on("click", function () {
+                getWQMap(map, 1);
+            });
+
+            $("#rmapLoad").on("click", function () {
+                if (document.getElementById("map").classList.contains("mapfull")) {
+                    toggleCompareMap();
+                }
+                getWQMap(map2, 2);
+            });
+
+            $("#graphLoad").on("click", function () {
+                getWQgraph();
+            });
         }
 
         $('#time_start').on('hide', function (ev) {
