@@ -128,7 +128,10 @@
 </div>
 <br />
 <div>
-    <input type="file" onchange="gloadFile()" />
+    <input type="file" if="uFile" onchange="gloadFile()" />
+</div>
+<div>
+    <img src="{% static 'waterq/images/spacer.png' %}" style="height:100px" />
 </div>
 
 {% endblock %}
