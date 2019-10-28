@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
       integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
       crossorigin="" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.css" />
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 <link href="{% static 'waterq/css/main.css' %}" rel="stylesheet" />
 <link href="{% static 'waterq/css/maps.css' %}" rel="stylesheet" />
@@ -31,10 +33,9 @@
 <script src="https://code.jquery.com/jquery-3.4.1.js"
         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
         crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous"></script>
+
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js" type="text/javascript"></script>
 <script src="https://cdn.rawgit.com/mejackreed/Leaflet-IIIF/v2.0.1/leaflet-iiif.js"></script>
 <script src="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw.js"></script>
 <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js" type="text/javascript"></script>
@@ -91,11 +92,28 @@
 <form id="date" class="dates">
     <p id="startDate">
         <b>Start Date:</b>
-        {% gizmo time_start %}
+        <input class="form-control buttontheme" id="time_start"
+               name="time_start"
+               type="text"
+               data-provide="datepicker"
+               value="2016-01-01"
+               data-date-autoclose="true"
+               data-date-format="yyyy-mm-dd"
+               data-date-start-view="decade"
+               data-date-today-btn="true" />
+       
     </p>
     <p id="endDate">
         <b>End Date:</b>
-        {% gizmo time_end %}
+        <input class="form-control buttontheme" id="time_end"
+               name="time_end"
+               type="text"
+               data-provide="datepicker"
+               value="2016-08-01"
+               data-date-autoclose="true"
+               data-date-format="yyyy-mm-dd"
+               data-date-start-view="decade"
+               data-date-today-btn="true" />
     </p>
 </form>
 <br>

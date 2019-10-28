@@ -634,6 +634,31 @@ var LIBRARY_OBJECT = (function () {
             $("#app-content-wrapper").addClass("show-nav");
             map.invalidateSize();
         }
+
+        $('#time_start').on('hide', function (ev) {
+            console.log("hid");
+            setTimeout(function ()
+            {
+                console.log("added");
+                $("#app-content-wrapper").addClass("show-nav");
+                setTimeout(function () {
+                    console.log("added");
+                    $("#app-content-wrapper").addClass("show-nav");
+                }, 500);
+            }, 500);
+        });
+
+        $('#time_end').on('hide', function (ev) {
+            console.log("hid");
+            setTimeout(function () {
+                console.log("added");
+                $("#app-content-wrapper").addClass("show-nav");
+                setTimeout(function () {
+                    console.log("added");
+                    $("#app-content-wrapper").addClass("show-nav");
+                }, 500);
+            }, 500);
+        });
         // if ismobile add shownav class to app-content-wrapper
     });
     return public_interface;
