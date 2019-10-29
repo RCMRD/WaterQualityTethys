@@ -541,9 +541,12 @@ var LIBRARY_OBJECT = (function () {
     var reader = new FileReader();
 
     function loadFile() {
+        $("#txtFeedback").text("Load submitted");
         var file = document.querySelector('input[type=file]').files[0];
         reader.addEventListener("load", parseFile, false);
+        $("#txtFeedback").text("Load added");
         if (file) {
+            $("#txtFeedback").text("has file");
             reader.readAsText(file);
         }
     }
@@ -551,6 +554,7 @@ var LIBRARY_OBJECT = (function () {
     gloadFile = loadFile;
 
     function parseFile() {
+        $("#txtFeedback").text("parseFile");
         var doesColumnExist = false;
         console.log(reader.result);
         var data = d3.csvParse(reader.result, function (d) {
@@ -659,6 +663,11 @@ var LIBRARY_OBJECT = (function () {
                 getWQgraph();
             });
         }
+
+        $("#uFile").change(function () {
+            //submit the form here
+            gloadFile();
+        });
 
         $('#time_start').on('hide', function (ev) {
             console.log("hid");
