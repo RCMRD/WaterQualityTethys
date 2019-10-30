@@ -562,18 +562,20 @@ var LIBRARY_OBJECT = (function () {
             return d;
         });
         console.log(doesColumnExist);
+        $("#txtFeedback").text("doesColumnExist: " + doesColumnExist);
         gfileData = data;
         data.forEach(addMarkers);
     }
 
     function addMarkers(data) {
 
-
+        $("#txtFeedback").text("in add markers");
         var popuptxt = "";
         var marker = L.marker([parseFloat(data.Lat), parseFloat(data.Lon)], { title: data.CAST }).addTo(map);
         var marker2 = L.marker([parseFloat(data.Lat), parseFloat(data.Lon)], { title: data.CAST }).addTo(map2);
         Object.keys(data).forEach(function (key) {
             console.log(key);
+            $("#txtFeedback").append(key);
             if (key != "Lat" && key != "Lon") {
                 popuptxt += key + ": " + data[key] + "</br>";
             }
