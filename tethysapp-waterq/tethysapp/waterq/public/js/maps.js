@@ -1,4 +1,4 @@
-var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly, gtoggleCompareMap, gbounds, gloadFile, gfileData;
+var gmap, gmap2, gdata, gconvertData, gdrawnLayer, gCreatedPoly, gtoggleCompareMap, gbounds, gloadFile, gfileData, gdataOriginal, gCompiledData;
 var LIBRARY_OBJECT = (function () {
     // Global Variables
     var map,
@@ -10,7 +10,7 @@ var LIBRARY_OBJECT = (function () {
         drawnlayer,
         createdPolyCoords,
         chart;
-    
+
     // Global Functions
     var init_vars,
         init_map,
@@ -173,7 +173,7 @@ var LIBRARY_OBJECT = (function () {
                 });
             }
             return;
-            
+
         };
 
         loadMap = function (data, layer, map) {
@@ -208,13 +208,48 @@ var LIBRARY_OBJECT = (function () {
                 });
                 xhr.done(function (data) {
                     if ("success" in data) {
-                        gdata = sortData(convertData(data.timeseries));
+                        gdataOriginal = data;
+
+                        var pData = [];
+                        if (Object.keys(data.timeseries[0][1]).length === 1) {
+                            pData.push({
+                                type: 'area',
+                                name: Object.keys(data.timeseries[0][1])[0],
+                                data: sortData(convertData(data.timeseries)),
+                                connectNulls: true
+                            });
+                        } else {
+                            var theKeys = Object.keys(data.timeseries[0][1]);
+                            var compiledData = [];
+                            data.timeseries.forEach(function (d) {
+                                for (var i = 0; i < theKeys.length; i++) {
+                                    var tempData = [];
+                                    var anObject = {}
+                                    anObject[theKeys[i]] = d[1][theKeys[i]];
+                                    tempData.push(d[0]);
+                                    tempData.push(anObject);
+                                    if (compiledData.length - 1 < i) {
+                                        compiledData[i] = [];
+                                    }
+                                    compiledData[i].push(tempData);
+                                }
+                            });
+                            gCompiledData = compiledData;
+                            compiledData.forEach(function (d, index) {
+                                pData.push({
+                                    type: 'area',
+                                    name: theKeys[index],
+                                    data: sortData(convertData(d)),
+                                    valueDecimals: 20,
+                                    connectNulls: true
+                                });
+                            });
+
+                        }
                         console.log(convertData(data.timeseries));
-                        /*
-                        Highcharts is erroring saying it expects data to be sorted, check to see if it is or not
-                        */
-                       // sortData(
-                        plotData(gdata);
+
+
+                        plotData(pData);
                         $("#view-file-loading").toggleClass("hidden");
                     } else {
                         $("#view-file-loading").toggleClass("hidden");
@@ -223,7 +258,7 @@ var LIBRARY_OBJECT = (function () {
                 });
                 return;
             }
-            
+
         }
         return null;
     };
@@ -237,13 +272,21 @@ var LIBRARY_OBJECT = (function () {
     }
 
     function convertData(data) {
-        return data.map(function (d) {
-            return [d[0], d[1][Object.keys(d[1])[0]]];
-        });
+        // i have to do something about data having multiple keys so i'm graphing all variables (rrs is an example)
+        if (Object.keys(gdataOriginal.timeseries[0][1]).length === 1) {
+            return data.map(function (d) {
+                return [d[0], d[1][Object.keys(d[1])[0]]];
+            });
+        } else {
+            return data.map(function (d) {
+
+                return [d[0], d[1][Object.keys(d[1])[0]]];
+            });
+        }
     }
     gconvertData = convertData;
 
-    function plotData(data) {
+    function plotData(series) {
         chart = Highcharts.stockChart('plotter', {
             chart: {
                 zoomType: 'x'
@@ -255,15 +298,22 @@ var LIBRARY_OBJECT = (function () {
                 }
             },
             tooltip: {
-                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+                //formatter: function () {
+                //    return Highcharts.dateFormat('%e - %b - %Y', new Date(this.x)) +
+                //        "<br/>" + '<span style="color:"'+ this.series.color +'">'+ this.series.name + '</span>: <b>' + this.point.y + '</b>';
+                //}
+                pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.6f}</b><br/>',
                 valueDecimals: 20,
-                split: true
+                split: false,
+                xDateFormat: '%Y-%m-%d'
             },
             xAxis: {
                 type: 'datetime',
                 dateTimeLabelFormats: { // don't display the dummy year
-                    month: '%e. %b',
-                    year: '%b'
+                    day: '%d %b %Y',
+                    week: '%d %b %Y',
+                    month: '%d %b %Y',
+                    year: '%d %b %Y'
                 },
                 title: {
                     text: 'Date'
@@ -273,7 +323,6 @@ var LIBRARY_OBJECT = (function () {
                 title: {
                     text: "Chart"
                 }
-
             },
             exporting: {
                 enabled: true
@@ -303,14 +352,9 @@ var LIBRARY_OBJECT = (function () {
                     },
                     threshold: null
                 },
-                connectNulls:true
+                connectNulls: true
             },
-            series: [{
-                type: 'area',
-                name: 'The Values',
-                data: data,
-                connectNulls:true
-            }],
+            series: series,
             credits: {
                 enabled: false
             }
@@ -332,7 +376,7 @@ var LIBRARY_OBJECT = (function () {
 
     function getWQMap(which, num) {
         var workingLayer = num === 1 ? map1Layer : map2Layer;
-        
+
         if (workingLayer) {
             wq_layer = workingLayer;
         } else {
@@ -347,7 +391,7 @@ var LIBRARY_OBJECT = (function () {
         } else {
             map2Layer = workingLayer;
         }
-        
+
         map_request({
             collection: getCollection(),
             reducer: "mean",
@@ -423,7 +467,7 @@ var LIBRARY_OBJECT = (function () {
                 "max": "112",
                 "palette": "0022c9,194bff,5d567c,b20000,f00a0a"
             });
-        } else if ($("#product").val() === "tsi" ) {
+        } else if ($("#product").val() === "tsi") {
             return JSON.stringify({
                 "min": "0",
                 "max": "100",
@@ -443,12 +487,12 @@ var LIBRARY_OBJECT = (function () {
                 //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
             });
         } else if ($("#product").val() === "ndvi") {
-        return JSON.stringify({
-            "min": "-1",
-            "max": "1",
-            "palette": "0006bf,0313ac,062099,092d86,0d3a73,104760,13544d,17613a,1a6e27,1d7b14,218802"
-        });
-    }
+            return JSON.stringify({
+                "min": "-1",
+                "max": "1",
+                "palette": "0006bf,0313ac,062099,092d86,0d3a73,104760,13544d,17613a,1a6e27,1d7b14,218802"
+            });
+        }
     }
 
     function getCollection() {
@@ -485,7 +529,7 @@ var LIBRARY_OBJECT = (function () {
                     ? "sen"
                     : $("#platform").val() === "landsat"
                         ? "LS"
-                        : "Error"; 
+                        : "Error";
             var sensor = $("#sensor").val();
             var product = $("#product").val();
             var user = $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
@@ -501,7 +545,7 @@ var LIBRARY_OBJECT = (function () {
             time_series_request(jobj);
         } else {
             alert("Please draw an area of interest");
-        } 
+        }
     }
 
     function fillSensorOptions() {
@@ -541,12 +585,9 @@ var LIBRARY_OBJECT = (function () {
     var reader = new FileReader();
 
     function loadFile() {
-        $("#txtFeedback").text("Load submitted");
         var file = document.querySelector('input[type=file]').files[0];
         reader.addEventListener("load", parseFile, false);
-        $("#txtFeedback").text("Load added");
         if (file) {
-            $("#txtFeedback").text("has file");
             reader.readAsText(file);
         }
     }
@@ -554,28 +595,21 @@ var LIBRARY_OBJECT = (function () {
     gloadFile = loadFile;
 
     function parseFile() {
-        $("#txtFeedback").text("parseFile");
         var doesColumnExist = false;
         console.log(reader.result);
         var data = d3.csvParse(reader.result, function (d) {
             doesColumnExist = d.hasOwnProperty("Date");
             return d;
         });
-        console.log(doesColumnExist);
-        $("#txtFeedback").text("doesColumnExist: " + doesColumnExist);
         gfileData = data;
         data.forEach(addMarkers);
     }
 
     function addMarkers(data) {
-
-        $("#txtFeedback").text("in add markers");
         var popuptxt = "";
         var marker = L.marker([parseFloat(data.Lat), parseFloat(data.Lon)], { title: data.CAST }).addTo(map);
         var marker2 = L.marker([parseFloat(data.Lat), parseFloat(data.Lon)], { title: data.CAST }).addTo(map2);
         Object.keys(data).forEach(function (key) {
-            console.log(key);
-            $("#txtFeedback").append(key);
             if (key != "Lat" && key != "Lon") {
                 popuptxt += key + ": " + data[key] + "</br>";
             }
@@ -589,7 +623,7 @@ var LIBRARY_OBJECT = (function () {
         //$('[name="map-button"]').on("click", function () {
         //    getWQMap();
         //});
-        
+
         $("#splitMap").on("click", function () {
             toggleCompareMap();
         });
@@ -672,25 +706,18 @@ var LIBRARY_OBJECT = (function () {
         });
 
         $('#time_start').on('hide', function (ev) {
-            console.log("hid");
-            setTimeout(function ()
-            {
-                console.log("added");
+            setTimeout(function () {
                 $("#app-content-wrapper").addClass("show-nav");
                 setTimeout(function () {
-                    console.log("added");
                     $("#app-content-wrapper").addClass("show-nav");
                 }, 500);
             }, 500);
         });
 
         $('#time_end').on('hide', function (ev) {
-            console.log("hid");
             setTimeout(function () {
-                console.log("added");
                 $("#app-content-wrapper").addClass("show-nav");
                 setTimeout(function () {
-                    console.log("added");
                     $("#app-content-wrapper").addClass("show-nav");
                 }, 500);
             }, 500);
