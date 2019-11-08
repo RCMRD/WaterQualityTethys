@@ -111,6 +111,18 @@ select {
     transform: translate3d(250px,0,0);
 }
 
+div#map1legend, div#map2legend {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    z-index: 1000;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 2px 5px 2px;
+}
+
 #ismobile {
     display: none;
 }

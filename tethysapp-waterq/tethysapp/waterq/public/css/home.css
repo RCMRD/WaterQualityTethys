@@ -2,6 +2,33 @@
     visibility: hidden;
 }
 
+body {
+    background-color: whitesmoke;
+}
+
+#content_body {
+    /*background-image: url("/static/waterq/images/GrayScale_Chlor.png");
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-size: cover;*/
+}
+
+.mt25 {
+    margin-top: 25px;
+}
+
+h6, .story {
+    color: #9dd0f5;
+    text-shadow: 2px 2px #000000;
+}
+
+#app-content {
+    background-image: url(/static/waterq/images/GrayScale_Chlor.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 #app-content-wrapper.show-nav #app-content {
     padding-right: 0px;
     -webkit-transform: translateX(-0px);
@@ -20,8 +47,20 @@
     display: none;
 }
 
+.innerTitle {
+    color: #067ef5;
+    text-shadow: 2px 2px #000000;
+}
+
+p {
+    color: #9dd0f5;
+    text-shadow: 2px 2px #000000;
+    font-size: 16px;
+}
+
 #inner-app-content {
     padding: 0;
+    /*background-color: #626262;*/
 }
 
 h2.chead, h2.title {
@@ -58,6 +97,7 @@ h2.chead, h2.title {
 .containerContent {
     padding: 8px;
     min-height: 200px;
+    background-color: #000000ad;
 }
 
 .toolbtn {
@@ -91,7 +131,6 @@ h2.chead, h2.title {
 }
 
 .jumbobox {
-    
     background: 0 0;
     color: #fff;
     width: 500px;
@@ -100,7 +139,6 @@ h2.chead, h2.title {
     text-shadow: 2px 2px rgba(61,88,109,.75);
     font-weight: 600;
     text-align: center;
-    
     display: inline-block;
     background-color: rgba(39, 40, 41, 0.8);
     padding: 20px;
@@ -109,13 +147,13 @@ h2.chead, h2.title {
     box-shadow: 3px 5px 3px rgba(0,0,0,.35);
 }
 
-.jumbobox a {
-    color: #fff;
-    font-size: 32px;
-    text-shadow: 2px 2px rgba(61,88,109,.75);
-    font-weight: 600;
-    text-decoration: none;
-}
+    .jumbobox a {
+        color: #fff;
+        font-size: 32px;
+        text-shadow: 2px 2px rgba(61,88,109,.75);
+        font-weight: 600;
+        text-decoration: none;
+    }
 
 #credits {
     position: absolute;

@@ -3,12 +3,20 @@
 
 {% block content_dependent_styles %}
 {{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
 <link href="{% static 'waterq/css/home.css' %}" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Muli" />
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://highcharts.github.io/export-csv/export-csv.js"></script>
+<script src="https://code.highcharts.com/modules/no-data-to-display.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="{% static 'waterq/js/main.js' %}" type="text/javascript"></script>
 <script src="{% static 'waterq/js/home.js' %}" type="text/javascript"></script>
 {% endblock %}
@@ -21,7 +29,7 @@
 
 <section class="hero--area section-padding-80">
 
-    <div class="col-md-12 col-lg-12 d-flex hero-image" style="padding:0; text-align:center; background-color: black;">
+    <div class="col-md-12 col-lg-12 d-flex hero-image" style="padding:0; text-align:center; background-color: black; display:none;">
         <!--<img src="{% static 'waterq/images/hglobe.jpg' %}" class="img-fluid" style="max-width:100%;" alt="Lake Natron">-->
         <div class="hero-inner">
             <h2 class="jumbobox">
@@ -32,117 +40,131 @@
         </div>
 
     </div>
-    <div class="col-md-8 col-lg-8 d-flex">
-        <div class="rowContainers">
-            <h2 class="title">About</h2>
-            <div class="containerContent">
-                <img src="{% static 'waterq/images/aboutimage.jpg' %}" style="max-width:66%; float:right; border-radius: 8px; margin-left: 10px; margin-bottom: 10px;" />
-                <p>
-                    The Inland Water Quality of Eastern & Southern Africa web application provides remote sensing derived water quality,
-                    land cover and land use (LULC) characteristics for Lake Victoria, Lake Malawi, and Lake Tanganyika.
-                    The freely available data is sourced from Landsat, MODIS, and Sentinel programs, providing a multi-sensor approach in assessing water quality of inland lakes.
+    <div id="content_body" class="col-md-12 col-lg-12 d-flex">
+        <div class="col-md-8 col-lg-8 d-flex mt25">
+            <div class="rowContainers">
 
-                </p><p>
-                    Water quality parameters for observation include Chlorophyll a (chla), Lake Surface Temperature (LST), Trophic State (TS), Trophic State classified (TSr) and Secchi Depth (SD).
-                    LULC classifications include agricultural, forested, urban, bare lands, woodland, and grassland (open and closed) areas. Additionally,
-                    we have mapped floating vegetation (hyacinth) using optical (LS8) and radar (S2), NDVI for the basin, and made it possible to overlay TOPEX lake level data in graphs.
+                <div class="containerContent">
+                    <h2 class="innerTitle">About</h2>
 
-                </p>
-                <p>
-                    Access the water quality viewer visualize maps, plot time-series data and upload csv files with in-situ observations to compare with remote sensing observations.
-                    This platform supports users with the necessary information derived from remote sensing data to support catchment-related decisions. The work is sponsored by USAID and NASA.
-                    <br style="clear:both;" />
-                    <a href="{% url 'waterq:maps' %}" class="buttontheme" style="float:right;">
+                    <p>
+                        The Inland Water Quality of Eastern & Southern Africa web application provides remote sensing derived water quality,
+                        land cover and land use (LULC) characteristics for Lake Victoria, Lake Malawi, and Lake Tanganyika.
+                        The freely available data is sourced from Landsat, MODIS, and Sentinel programs, providing a multi-sensor approach in assessing water quality of inland lakes.
+
+                    </p><p>
+                        Water quality parameters for observation include Chlorophyll a (chla), Lake Surface Temperature (LST), Trophic State (TS), Trophic State classified (TSr) and Secchi Depth (SD).
+                        LULC classifications include agricultural, forested, urban, bare lands, woodland, and grassland (open and closed) areas. Additionally,
+                        we have mapped floating vegetation (hyacinth) using optical (LS8) and radar (S2), NDVI for the basin, and made it possible to overlay TOPEX lake level data in graphs.
+
+                    </p>
+                    <p>
+                        Access the water quality viewer visualize maps, plot time-series data and upload csv files with in-situ observations to compare with remote sensing observations.
+                        This platform supports users with the necessary information derived from remote sensing data to support catchment-related decisions. The work is sponsored by USAID and NASA.
+                        <br style="clear:both;" />
+
+                    </p>
+                    <img src="{% static 'waterq/images/aboutimageinv.jpg' %}" style="max-width:66%; float:left; border-radius: 8px; margin-left: 10px; margin-bottom: 10px;" />
+                    <a href="{% url 'waterq:maps' %}" class="buttontheme" style="position: absolute; bottom: 5%; right: 5%;">
                         Get Started
                     </a>
                     <br style="clear:both;" />
-                </p>
-                <!--<p>
-                    <h6>Access Water Quality Viewer tool here</h6>
+                    <!--<p>
+                        <h6>Access Water Quality Viewer tool here</h6>
+                        <a href="{% url 'waterq:maps' %}">
+                            <img src="{% static 'waterq/images/wqmap.png' %}" class="img-fluid toolbtn" style="margin-right:3%; margin-left:2%;" alt="Water Quality Map" />
+                        </a>
+                    </p>-->
+
+                </div>
+            </div>
+
+        </div>
+        <!--<div class="col-md-4 col-lg-4 d-flex">
+            <div class="rowContainers">
+                <h2 class="title">Tools</h2>
+                <div class="containerContent">
                     <a href="{% url 'waterq:maps' %}">
                         <img src="{% static 'waterq/images/wqmap.png' %}" class="img-fluid toolbtn" style="margin-right:3%; margin-left:2%;" alt="Water Quality Map" />
                     </a>
-                </p>-->
+                    <a href="{% url 'waterq:charts' %}">
+                        <img src="{% static 'waterq/images/wqgraph.png' %}" class="img-fluid toolbtn" style="margin-right:2%; margin-left:3%;" alt="Responsive image" id="btnwqgraph" />
+                    </a>
+                    <br style="clear:both;" />
+                </div>
+            </div>
 
+        </div>-->
+        <div class="col-md-4 col-lg-4 d-flex mt25">
+            <div class="rowContainers">
+                <div class="containerContent">
+                    <div id="plotter" name="plotter" style="height:100%;width:100%">
+                    </div>
+                </div>
             </div>
         </div>
 
+        <div class="col-md-4 col-lg-4 d-flex mt25">
+            <div class="rowContainers">
+
+                <div class="containerContent">
+                    <h2 class="innerTitle">Resources</h2>
+                    <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
+                        <div class="col-md-4 col-lg-4 d-flex">
+                            <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/d3ii5X4iS7Wkkzb0HvBcVXwhMriJISF_awCvXX4LSfU8HWmatmuJGmSdz6JXduZHRCz3OPt89cB5_t0OQF1SCz7Fyh_yIrrh4tfm1Z1peKLuIYVdqP3JEo6tIqNIWpnn0e81T8my_mYatljLAvKXKQ=-w200-h200-p" alt="">
+                        </div>
+                        <div class="col-md-8 col-lg-8 d-flex">
+                            <a href="https://borgenproject.org/water-quality-in-south-africa/">
+                                <h6>Water quality in South Africa</h6>
+                            </a>
+                            <span class="story">Summary info and some short text</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
+                        <div class="col-md-4 col-lg-4 d-flex">
+                            <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/m9AOI2mQiuC4qYBx4ZH5R27W3Y8LE-aP0MbQkPA73cQi4wPkVChe-DheXU4cqhicxX6D-hGTHPwGD7JxuB0QGM9CssBWUOvBaCfEFSPS1etDi0_L8xKA-DmbGJHQ762VXMSwuohuycnniPlpdTxeLlLgbvUhkrDPIIWSpJxXXPxUZlrz1ok=-w200-h200-p" alt="">
+                        </div>
+                        <div class="col-md-8 col-lg-8 d-flex">
+                            <a href="https://borgenproject.org/water-quality-in-south-africa/">
+                                <h6>Water quality news</h6>
+                            </a>
+                            <span class="story">Summary info and some short text</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
+                        <div class="col-md-4 col-lg-4 d-flex">
+                            <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/tk_4mISfm0wcjzYJk7GEuVORoPchddAoJHzXVbQTScJ4PKT7xz_R4N0VN4omAFfoOwlOhjGFQSFMzcHzz8qbCYfz5eWXQMEcjm2rhHDok2HZGO7vSbHnOnrASugki5J43btsjxiTj6eD7crxCBrS_5E5-lyO-_0UykJAF7Ut_FpJGJco7kgu7Mj9mj1axYaudXGK4D2MzMSvyGulKPudJdhJQ_Qbkkw0ACgUJM9AL7KA0arHg6ph_Uabihk4J80kNb3ZQ-JRUuDEFpIqIDs3Qgcvj-D_skGDjFefE4yYhX0=-w200-h200-p" alt="">
+                        </div>
+                        <div class="col-md-8 col-lg-8 d-flex">
+                            <a href="https://borgenproject.org/water-quality-in-south-africa/">
+                                <h6>Research about Water quality</h6>
+                            </a>
+                            <span class="story">Summary info and some short text</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
+                        <div class="col-md-4 col-lg-4 d-flex">
+                            <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/7HB94g6L56xvaCALvDanwgT20oEZtX1vjp8D7mqJOQI2pvE-ojGElAkoDZYIiFlktMzqdTJjdgV-0gtLMZsasmzFz-h7Cdcp3CLVE5D3BK394Bvhch0-t3MRY80=-w200-h200-p" alt="">
+                        </div>
+                        <div class="col-md-8 col-lg-8 d-flex">
+                            <a href="https://borgenproject.org/water-quality-in-south-africa/">
+                                <h6>Water quality is here</h6>
+                            </a>
+                            <span class="story">Summary info and some short text</span>
+                        </div>
+                    </div>
+                    <br style="clear:both;" />
+                    <!--<p>
+                        <a href="https://borgenproject.org/water-quality-in-south-africa/">Water quality in South Africa</a><br />
+                        <a href="https://www.rcmrd.org/providing-the-source-of-life-on-world-water-day"> Providing the source of life on World Water Day</a><br />
+                        <a href="https://borgenproject.org/water-quality-in-south-africa/">Water quality in South Africa</a><br />
+                        <a href="https://www.rcmrd.org/providing-the-source-of-life-on-world-water-day"> Providing the source of life on World Water Day</a><br />
+                    </p>-->
+                </div>
+            </div>
+
+        </div>
     </div>
-    <!--<div class="col-md-4 col-lg-4 d-flex">
-        <div class="rowContainers">
-            <h2 class="title">Tools</h2>
-            <div class="containerContent">
-                <a href="{% url 'waterq:maps' %}">
-                    <img src="{% static 'waterq/images/wqmap.png' %}" class="img-fluid toolbtn" style="margin-right:3%; margin-left:2%;" alt="Water Quality Map" />
-                </a>
-                <a href="{% url 'waterq:charts' %}">
-                    <img src="{% static 'waterq/images/wqgraph.png' %}" class="img-fluid toolbtn" style="margin-right:2%; margin-left:3%;" alt="Responsive image" id="btnwqgraph" />
-                </a>
-                <br style="clear:both;" />
-            </div>
-        </div>
-
-    </div>-->
-    <div class="col-md-4 col-lg-4 d-flex">
-        <div class="rowContainers">
-            <h2 class="title">Resources</h2>
-            <div class="containerContent">
-                <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
-                    <div class="col-md-4 col-lg-4 d-flex">
-                        <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/d3ii5X4iS7Wkkzb0HvBcVXwhMriJISF_awCvXX4LSfU8HWmatmuJGmSdz6JXduZHRCz3OPt89cB5_t0OQF1SCz7Fyh_yIrrh4tfm1Z1peKLuIYVdqP3JEo6tIqNIWpnn0e81T8my_mYatljLAvKXKQ=-w200-h200-p" alt="">
-                    </div>
-                    <div class="col-md-8 col-lg-8 d-flex">
-                        <a href="https://borgenproject.org/water-quality-in-south-africa/">
-                            <h6>Water quality in South Africa</h6>
-                        </a>
-                        <span>Summary info and some short text</span>
-                    </div>
-                </div>
-                <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
-                    <div class="col-md-4 col-lg-4 d-flex">
-                        <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/m9AOI2mQiuC4qYBx4ZH5R27W3Y8LE-aP0MbQkPA73cQi4wPkVChe-DheXU4cqhicxX6D-hGTHPwGD7JxuB0QGM9CssBWUOvBaCfEFSPS1etDi0_L8xKA-DmbGJHQ762VXMSwuohuycnniPlpdTxeLlLgbvUhkrDPIIWSpJxXXPxUZlrz1ok=-w200-h200-p" alt="">
-                    </div>
-                    <div class="col-md-8 col-lg-8 d-flex">
-                        <a href="https://borgenproject.org/water-quality-in-south-africa/">
-                            <h6>Water quality news</h6>
-                        </a>
-                        <span>Summary info and some short text</span>
-                    </div>
-                </div>
-                <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
-                    <div class="col-md-4 col-lg-4 d-flex">
-                        <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/tk_4mISfm0wcjzYJk7GEuVORoPchddAoJHzXVbQTScJ4PKT7xz_R4N0VN4omAFfoOwlOhjGFQSFMzcHzz8qbCYfz5eWXQMEcjm2rhHDok2HZGO7vSbHnOnrASugki5J43btsjxiTj6eD7crxCBrS_5E5-lyO-_0UykJAF7Ut_FpJGJco7kgu7Mj9mj1axYaudXGK4D2MzMSvyGulKPudJdhJQ_Qbkkw0ACgUJM9AL7KA0arHg6ph_Uabihk4J80kNb3ZQ-JRUuDEFpIqIDs3Qgcvj-D_skGDjFefE4yYhX0=-w200-h200-p" alt="">
-                    </div>
-                    <div class="col-md-8 col-lg-8 d-flex">
-                        <a href="https://borgenproject.org/water-quality-in-south-africa/">
-                            <h6>Research about Water quality</h6>
-                        </a>
-                        <span>Summary info and some short text</span>
-                    </div>
-                </div>
-                <div class="col-md-12 col-lg-12 d-flex" style="margin-bottom: 8px;">
-                    <div class="col-md-4 col-lg-4 d-flex">
-                        <img style="max-width:100%; border-radius: 8px; max-height: 100px;" src="https://lh6.googleusercontent.com/proxy/7HB94g6L56xvaCALvDanwgT20oEZtX1vjp8D7mqJOQI2pvE-ojGElAkoDZYIiFlktMzqdTJjdgV-0gtLMZsasmzFz-h7Cdcp3CLVE5D3BK394Bvhch0-t3MRY80=-w200-h200-p" alt="">
-                    </div>
-                    <div class="col-md-8 col-lg-8 d-flex">
-                        <a href="https://borgenproject.org/water-quality-in-south-africa/">
-                            <h6>Water quality is here</h6>
-                        </a>
-                        <span>Summary info and some short text</span>
-                    </div>
-                </div>
-                <br style="clear:both;" />
-                <!--<p>
-                    <a href="https://borgenproject.org/water-quality-in-south-africa/">Water quality in South Africa</a><br />
-                    <a href="https://www.rcmrd.org/providing-the-source-of-life-on-world-water-day"> Providing the source of life on World Water Day</a><br />
-                    <a href="https://borgenproject.org/water-quality-in-south-africa/">Water quality in South Africa</a><br />
-                    <a href="https://www.rcmrd.org/providing-the-source-of-life-on-world-water-day"> Providing the source of life on World Water Day</a><br />
-                </p>-->
-            </div>
-        </div>
-
-    </div>
-
 </section>
 <br style="clear:both;" />
 <p><br /></p>

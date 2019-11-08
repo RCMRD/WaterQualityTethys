@@ -54,25 +54,24 @@
 {% block app_navigation_items %}
 <li class="title">App Navigation</li>
 <form name="selector" id="options">
-    <p id="master">
+    <p id="master" style="display:none;">
         <span class="optTitle">Satellite Platform:</span>
         <br>
         <select name="master" id="platform" class="selectors buttontheme" style="width:98%;">
-            <option value="modis" selected> Modis</option>
-            <option value="sentinel">Sentinel</option>
+            <!--<option value="modis" selected> Modis</option>
+            <option value="sentinel">Sentinel</option>-->
             <option value="landsat">Landsat</option>
         </select>
     </p>
-    <p id="sensorSelect">
+    <p id="sensorSelect" style="display:none;">
         <span class="optTitle" id="missionTitle">Sensor:</span>
         <br>
         <select name="sensor" id="sensor" class="selectors buttontheme" style="width:98%;">
-            <option value="aqua" selected>Aqua</option>
-            <option value="terra">Terra</option>
-            <option value="others">here</option>
+            <option value='8'>8</option>
+
         </select>
     </p>
-    <p id="correctionSelect">
+    <p id="correctionSelect" style="display:none;">
         <span class="optTitle">Correction Type:</span>
         <br>
         <select name="correction" id="correction" class="selectors buttontheme" style="width:98%;">
@@ -139,8 +138,20 @@
 {% endblock %}
 
 {% block app_content %}
-<div id="map" class="mapfull"></div>
-<div id="map2" style="display:none;"></div>
+<div id="map" class="mapfull">
+    <div id="map1legend">
+        <h2>Legend</h2>
+        <span id="m1legendTitle"></span><br />
+        <img id="m1Image" src="" alt="Legend" />
+    </div>
+</div>
+<div id="map2" style="display:none;">
+    <div id="map2legend">
+        <h2>Legend</h2>
+        <span id="m2legendTitle"></span><br />
+        <img id="m2Image" src="" alt="Legend" />
+    </div>
+</div>
 
 
     {% endblock %}

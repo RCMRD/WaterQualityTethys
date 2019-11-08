@@ -407,7 +407,7 @@ def imageToMapId(imageName, visParams={}):
         print("******imageToMapId error************", sys.exc_info()[0])
     return values
 
-def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None):
+def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None, sld=None):
     try:
         values = None
         eeCollection = ee.ImageCollection(collectionName)
@@ -415,13 +415,25 @@ def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', date
             eeFilterDate = ee.Filter.date(dateFrom, dateTo)
             eeCollection = eeCollection.filter(eeFilterDate)
         if(reducer == 'min'):
-            values = imageToMapId(eeCollection.min(), visParams)
+            if(sld):
+                values = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
+            else:
+                values = imageToMapId(eeCollection.min(), visParams)
         elif (reducer == 'max'):
-            values = imageToMapId(eeCollection.max(), visParams)
+            if(sld):
+                values = imageToMapId(eeCollection.max().sldStyle(sld), visParams)
+            else:
+                values = imageToMapId(eeCollection.max(), visParams)
         elif (reducer == 'mosaic'):
-            values = imageToMapId(eeCollection.mosaic(), visParams)
+            if(sld):
+                values = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
+            else:
+                values = imageToMapId(eeCollection.mion(), visParams)
         else:
-            values = imageToMapId(eeCollection.mean(), visParams)
+            if(sld):
+                values = imageToMapId(eeCollection.mean().sldStyle(sld), visParams)
+            else:
+                values = imageToMapId(eeCollection.mean(), visParams)
         
     except EEException as e:
         print(str(e))

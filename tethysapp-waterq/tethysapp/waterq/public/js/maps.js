@@ -34,24 +34,31 @@ var LIBRARY_OBJECT = (function () {
         $selectCollc = $('#collectionSelect');
         $selectProd = $('#productSelect');
         modalChart = $("#chart-modal");
-        platform = [{
-            type: "modis",
-            options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option><option value='others'>here</option>",
-            corrections: "<option value='rrs'>RRS</option><option value='toa'>TOA</option>",
-            products: "<option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option>"
-        },
-        {
-            type: "sentinel",
-            options: "<option value='1'>1</option><option value='2'>2</option><option value='others'>here</option>",
-            corrections: "<option value='tbd'>TBD</option><option value='notsure'>Not Sure</option>",
-            products: "<option value='tbd'>TBD</option>"
-        },
-        {
-            type: "landsat",
-            options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
-            corrections: null,
-            products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsir'>tsiR</option><option value='ndvi'>NDVI</option>"
-        }
+        platform = [
+        //    {
+        //    type: "modis",
+        //    options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option><option value='others'>here</option>",
+        //    corrections: "<option value='rrs'>RRS</option><option value='toa'>TOA</option>",
+        //    products: "<option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option>"
+        //},
+        //{
+        //    type: "sentinel",
+        //    options: "<option value='1'>1</option><option value='2'>2</option><option value='others'>here</option>",
+        //    corrections: "<option value='tbd'>TBD</option><option value='notsure'>Not Sure</option>",
+        //    products: "<option value='tbd'>TBD</option>"
+        //},
+        //{
+        //    type: "landsat",
+        //    options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
+        //    corrections: null,
+        //    products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsir'>tsiR</option><option value='ndvi'>NDVI</option>"
+        //}
+            {
+                type: "landsat",
+                options: "<option value='8'>8</option>",
+                corrections: null,
+                products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsir'>tsiR</option>"//<option value='ndvi'>NDVI</option>"
+            }
         ];
         return;
     };
@@ -166,6 +173,7 @@ var LIBRARY_OBJECT = (function () {
                             localStorage.setItem(JSON.stringify(this.cache), JSON.stringify(data));
                         }
                         loadMap(data, layer, map);
+                        
                     } else {
                         $loading.css('display', 'none');
                         alert('Opps, there was a problem processing the request. Please see the following error: ' + data.error);
@@ -181,6 +189,7 @@ var LIBRARY_OBJECT = (function () {
             layer.addTo(map);
             $loading.css('display', 'none');
         }
+        
 
         time_series_request = function (data_dict) {
             var debug = false;
@@ -244,11 +253,7 @@ var LIBRARY_OBJECT = (function () {
                                     connectNulls: true
                                 });
                             });
-
                         }
-                        console.log(convertData(data.timeseries));
-
-
                         plotData(pData);
                         $("#view-file-loading").toggleClass("hidden");
                     } else {
@@ -272,7 +277,6 @@ var LIBRARY_OBJECT = (function () {
     }
 
     function convertData(data) {
-        // i have to do something about data having multiple keys so i'm graphing all variables (rrs is an example)
         if (Object.keys(gdataOriginal.timeseries[0][1]).length === 1) {
             return data.map(function (d) {
                 return [d[0], d[1][Object.keys(d[1])[0]]];
@@ -298,10 +302,6 @@ var LIBRARY_OBJECT = (function () {
                 }
             },
             tooltip: {
-                //formatter: function () {
-                //    return Highcharts.dateFormat('%e - %b - %Y', new Date(this.x)) +
-                //        "<br/>" + '<span style="color:"'+ this.series.color +'">'+ this.series.name + '</span>: <b>' + this.point.y + '</b>';
-                //}
                 pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.6f}</b><br/>',
                 valueDecimals: 20,
                 split: false,
@@ -309,7 +309,7 @@ var LIBRARY_OBJECT = (function () {
             },
             xAxis: {
                 type: 'datetime',
-                dateTimeLabelFormats: { // don't display the dummy year
+                dateTimeLabelFormats: { 
                     day: '%d %b %Y',
                     week: '%d %b %Y',
                     month: '%d %b %Y',
@@ -366,6 +366,7 @@ var LIBRARY_OBJECT = (function () {
         init_vars();
         init_map();
         init_events();
+        fillSensorOptions();
     };
     /************************************************************************
      *                        DEFINE PUBLIC INTERFACE
@@ -391,14 +392,22 @@ var LIBRARY_OBJECT = (function () {
         } else {
             map2Layer = workingLayer;
         }
-
+        
         map_request({
             collection: getCollection(),
             reducer: "mean",
             visparams: getVisParams(),
             start_time: $("#time_start").val(),
-            end_time: $("#time_end").val()
+            end_time: $("#time_end").val(),
+            sld: getSld()
         }, workingLayer, which);
+        loadLegend(num);
+    }
+
+    function loadLegend(which) {
+        $("#m" + which + "legendTitle").text($("#product  option:selected").text());
+        $("#m" + which + "Image").attr("src", "/static/waterq/images/" + $("#product").val() + "_legend.png");
+        $("#map" + which + "legend").show();
     }
 
     function isCached(data_dict) {
@@ -447,42 +456,131 @@ var LIBRARY_OBJECT = (function () {
     }
 
     gtoggleCompareMap = toggleCompareMap;
+    function getSld() {
 
+        if ($("#product").val() === "chlor") {
+            return '<RasterSymbolizer>' +
+                '<ColorMap type="ramp" extended="false" >' +
+                '<ColorMapEntry color="#0C2060" quantity=".01" label=".01"/>' +
+                '<ColorMapEntry color="#253B97" quantity=".03" label=".03" />' +
+                '<ColorMapEntry color="#253B97" quantity=".1" label=".1" />' +
+                '<ColorMapEntry color="#2296C1" quantity=".3" label=".3" />' +
+                '<ColorMapEntry color="#4BB3BA" quantity="1" label="1" />' +
+                '<ColorMapEntry color="#8ED3BA" quantity="3" label="3" />' +
+                '<ColorMapEntry color="#CCE5AC" quantity="10" label="10" />' +
+                '<ColorMapEntry color="#F2FABC" quantity="30" label="30" />' +
+                '<ColorMapEntry color="#FEFFD8" quantity="60" label="60" />' +
+                '</ColorMap>' +
+                '</RasterSymbolizer>';
+        } else if ($("#product").val() === "sd") {
+            return '<RasterSymbolizer>' +
+                '<ColorMap type="intervals" extended="false" >' +
+                '<ColorMapEntry color="#E92E11" quantity="0.5" label="0.5"/>' +
+                '<ColorMapEntry color="#EB6016" quantity="2" label="2" />' +
+                '<ColorMapEntry color="#F19420" quantity="3" label="3" />' +
+                '<ColorMapEntry color="#F4CD2C" quantity="3.5" label="3.5" />' +
+                '<ColorMapEntry color="#FBFF37" quantity="4" label="4" />' +
+                '<ColorMapEntry color="#E6FC68" quantity="5" label="5" />' +
+                '<ColorMapEntry color="#CAFC9E" quantity="6" label="6" />' +
+                '<ColorMapEntry color="#A0F8C4" quantity="9" label="9" />' +
+                '<ColorMapEntry color="#72FCFE" quantity="12" label="12" />' +
+                '<ColorMapEntry color="#5BC0FD" quantity="14" label="14" />' +
+                '<ColorMapEntry color="#4A81FC" quantity="16" label="16" />' +
+                '<ColorMapEntry color="#2B47FB" quantity="18" label="18" />' +
+                '<ColorMapEntry color="#0000F5" quantity="19" label="19" />' +
+                '</ColorMap>' +
+                '</RasterSymbolizer>';
+        } else if ($("#product").val() === "lst") {
+            return '<RasterSymbolizer>' +
+                '<ColorMap type="ramp" extended="false" >' +
+                '<ColorMapEntry color="#0000ff" quantity="0" label="0"/>' +
+                '<ColorMapEntry color="#C525C5" quantity="10" label="10" />' +
+                '<ColorMapEntry color="#0830DC" quantity="12" label="12" />' +
+                '<ColorMapEntry color="#21FFFF" quantity="15" label="15" />' +
+                '<ColorMapEntry color="#28F928" quantity="18" label="18" />' +
+                '<ColorMapEntry color="#F7F720" quantity="20" label="20" />' +
+                '<ColorMapEntry color="#FD2020" quantity="30" label="30" />' +
+                '<ColorMapEntry color="#421919" quantity="45" label="45" />' +
+                '</ColorMap>' +
+                '</RasterSymbolizer>';
+        } else if ($("#product").val() === "tsi") {
+            return '<RasterSymbolizer>' +
+                '<ColorMap type="intervals" extended="true" >' +
+                '<ColorMapEntry color="#904D9D" quantity="0" label="0"/>' +
+                '<ColorMapEntry color="#8251A2" quantity="10" label="10" />' +
+                '<ColorMapEntry color="#3D4EA0" quantity="20" label="20" />' +
+                '<ColorMapEntry color="#3D5AA9" quantity="30" label="30" />' +
+                '<ColorMapEntry color="#3883C3" quantity="40" label="40" />' +
+                '<ColorMapEntry color="#52C6DF" quantity="50" label="50" />' +
+                '<ColorMapEntry color="#87C53E" quantity="60" label="60" />' +
+                '<ColorMapEntry color="#E8E617" quantity="70" label="70" />' +
+                '<ColorMapEntry color="#EDA822" quantity="80" label="80" />' +
+                '<ColorMapEntry color="#DA6E26" quantity="90" label="90" />' +
+                '<ColorMapEntry color="#DA3726" quantity="100" label="100" />' +
+                '</ColorMap>' +
+                '</RasterSymbolizer>';
+        } else if ($("#product").val() === "tsir") {
+            return '<RasterSymbolizer>' +
+                '<ColorMap type="intervals" extended="true" >' +
+                '<ColorMapEntry color="#904D9D" quantity="0" label="0"/>' +
+                '<ColorMapEntry color="#8251A2" quantity="1" label="1" />' +
+                '<ColorMapEntry color="#3D4EA0" quantity="2" label="2" />' +
+                '<ColorMapEntry color="#3D5AA9" quantity="3" label="3" />' +
+                '<ColorMapEntry color="#3883C3" quantity="4" label="4" />' +
+                '<ColorMapEntry color="#52C6DF" quantity="5" label="5" />' +
+                '<ColorMapEntry color="#87C53E" quantity="6" label="6" />' +
+                '<ColorMapEntry color="#E8E617" quantity="7" label="7" />' +
+                '<ColorMapEntry color="#EDA822" quantity="8" label="8" />' +
+                '<ColorMapEntry color="#DA6E26" quantity="9" label="9" />' +
+                '<ColorMapEntry color="#DA3726" quantity="10" label="10" />' +
+                '</ColorMap>' +
+                '</RasterSymbolizer>';
+        } else if ($("#product").val() === "rrs") {
+            return '';
+        } else {
+            return null;
+        }
+    }
     function getVisParams() {
         if ($("#product").val() === "chlor") {
             return JSON.stringify({
-                "min": "0",
-                "max": "500",
-                "palette": "00FFFF,0000FF"
+                //"min": "0",
+                //"max": "500"
+                //,
+                //"palette": "00FFFF,0000FF"
             });
         } else if ($("#product").val() === "sd") {
             return JSON.stringify({
-                "min": "0",
-                "max": "5",
-                "palette": "00FFFF,0000FF"
+                //"min": "0",
+                //"max": "19"//,
+                //"palette": "E92E11,EB6016,F19420,F4CD2C,FBFF37,E6FC68,CAFC9E,A0F8C4,72FCFE,5BC0FD,4A81FC,2B47FB,0000F5"
             });
         } else if ($("#product").val() === "lst") {
             return JSON.stringify({
                 "min": "-5",
-                "max": "112",
-                "palette": "0022c9,194bff,5d567c,b20000,f00a0a"
+                "max": "112"
+                //,
+                //"palette": "0022c9,194bff,5d567c,b20000,f00a0a"
             });
         } else if ($("#product").val() === "tsi") {
             return JSON.stringify({
-                "min": "0",
-                "max": "100",
-                "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
+                //"min": "0",
+                //"max": "100"
+                //,
+                //"palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
         } else if ($("#product").val() === "tsir") {
             return JSON.stringify({
-                "min": "0",
-                "max": "10",
-                "palette": "f00a0a,b20000,5d567c,194bff,0022c9"
+                //"min": "0",
+                //"max": "10"
+                //,
+                //"palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
         } else if ($("#product").val() === "rrs") {
             return JSON.stringify({
                 "min": "0",
-                "max": "50"
+                "max": ".02",
+                "bands":"B5,B4,B3"
                 //, this will need to request bands
                 //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
             });
@@ -533,7 +631,7 @@ var LIBRARY_OBJECT = (function () {
             var sensor = $("#sensor").val();
             var product = $("#product").val();
             var user = $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
-            console.log(user);
+            
             var jobj = {
                 collection: getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
                 scale: 250,
@@ -541,7 +639,7 @@ var LIBRARY_OBJECT = (function () {
                 start_time: $("#time_start").val(),
                 end_time: $("#time_end").val()
             };
-            console.log(jobj);
+            
             time_series_request(jobj);
         } else {
             alert("Please draw an area of interest");
@@ -596,7 +694,6 @@ var LIBRARY_OBJECT = (function () {
 
     function parseFile() {
         var doesColumnExist = false;
-        console.log(reader.result);
         var data = d3.csvParse(reader.result, function (d) {
             doesColumnExist = d.hasOwnProperty("Date");
             return d;
@@ -620,9 +717,6 @@ var LIBRARY_OBJECT = (function () {
 
     $(function () {
         init_all();
-        //$('[name="map-button"]').on("click", function () {
-        //    getWQMap();
-        //});
 
         $("#splitMap").on("click", function () {
             toggleCompareMap();
