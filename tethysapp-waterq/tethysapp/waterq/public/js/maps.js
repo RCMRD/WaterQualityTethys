@@ -578,8 +578,8 @@ var LIBRARY_OBJECT = (function () {
             });
         } else if ($("#product").val() === "rrs") {
             return JSON.stringify({
-                "min": "0",
-                "max": ".02",
+                "min": ".01",
+                "max": ".006",
                 "bands":"B5,B4,B3"
                 //, this will need to request bands
                 //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
@@ -644,6 +644,24 @@ var LIBRARY_OBJECT = (function () {
         } else {
             alert("Please draw an area of interest");
         }
+    }
+
+    function calculateScale(poly) {
+        var points = poly.getPath();
+        var bounds = new google.maps.LatLngBounds();
+        for (var n = 0; n < points.length; n++) {
+            bounds.extend(points[n]);
+        }
+        var SW = bounds.getSouthWest();
+        var NE = bounds.getNorthEast();
+
+        var proj = map.getProjection();
+        var swPx = proj.fromLatLngToPoint(SW);
+        var nePx = proj.fromLatLngToPoint(NE);
+        var pixelWidth = (nePx.x - swPx.x) * Math.pow(2, map.getZoom());
+        var pixelHeight = (nePx.y - swPx.y) * Math.pow(2, map.getZoom());
+        console.log(pixelWidth);
+        console.log(pixelHeight);
     }
 
     function fillSensorOptions() {
