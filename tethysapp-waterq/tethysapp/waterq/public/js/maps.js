@@ -258,7 +258,7 @@ var LIBRARY_OBJECT = (function () {
                         $("#view-file-loading").toggleClass("hidden");
                     } else {
                         $("#view-file-loading").toggleClass("hidden");
-                        alert('Opps, there was a problem processing the request. Please see the following error: ' + data.error);
+                        alert('Opps, there was a problem processing the request. Please select a smaller polygon');
                     }
                 });
                 return;
@@ -461,10 +461,11 @@ var LIBRARY_OBJECT = (function () {
         if ($("#product").val() === "chlor") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="ramp" extended="false" >' +
-                '<ColorMapEntry color="#0C2060" quantity=".01" label=".01"/>' +
+
                 '<ColorMapEntry color="#253B97" quantity=".03" label=".03" />' +
-                '<ColorMapEntry color="#253B97" quantity=".1" label=".1" />' +
+                '<ColorMapEntry color="#0C2060" quantity=".01" label=".01"/>' +
                 '<ColorMapEntry color="#2296C1" quantity=".3" label=".3" />' +
+                '<ColorMapEntry color="#253B97" quantity=".1" label=".1" />' +
                 '<ColorMapEntry color="#4BB3BA" quantity="1" label="1" />' +
                 '<ColorMapEntry color="#8ED3BA" quantity="3" label="3" />' +
                 '<ColorMapEntry color="#CCE5AC" quantity="10" label="10" />' +
@@ -578,8 +579,8 @@ var LIBRARY_OBJECT = (function () {
             });
         } else if ($("#product").val() === "rrs") {
             return JSON.stringify({
-                "min": ".01",
-                "max": ".006",
+                "min": ".006",
+                "max": ".01",
                 "bands":"B5,B4,B3"
                 //, this will need to request bands
                 //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
@@ -634,7 +635,7 @@ var LIBRARY_OBJECT = (function () {
             
             var jobj = {
                 collection: getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
-                scale: 250,
+                scale: calculateScale(),
                 geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
                 start_time: $("#time_start").val(),
                 end_time: $("#time_end").val()
@@ -646,22 +647,21 @@ var LIBRARY_OBJECT = (function () {
         }
     }
 
-    function calculateScale(poly) {
-        var points = poly.getPath();
-        var bounds = new google.maps.LatLngBounds();
-        for (var n = 0; n < points.length; n++) {
-            bounds.extend(points[n]);
+    function calculateScale() {
+        var area = L.GeometryUtil.geodesicArea(gdrawnLayer.getLatLngs()[0]);
+        if (area < 893752263) {
+            return 30;
+        } else if (area < 12796975540) {
+            return 60;
+        } else if (area < 36523747484) {
+            return 100;
+        } else if (area < 46442458798) {
+            return 150;
+        } else if (area < 96442458798) {
+            return 250;
+        } else {
+            return 500
         }
-        var SW = bounds.getSouthWest();
-        var NE = bounds.getNorthEast();
-
-        var proj = map.getProjection();
-        var swPx = proj.fromLatLngToPoint(SW);
-        var nePx = proj.fromLatLngToPoint(NE);
-        var pixelWidth = (nePx.x - swPx.x) * Math.pow(2, map.getZoom());
-        var pixelHeight = (nePx.y - swPx.y) * Math.pow(2, map.getZoom());
-        console.log(pixelWidth);
-        console.log(pixelHeight);
     }
 
     function fillSensorOptions() {
