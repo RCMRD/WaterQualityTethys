@@ -461,16 +461,12 @@ var LIBRARY_OBJECT = (function () {
         if ($("#product").val() === "chlor") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="ramp" extended="false" >' +
-
-                '<ColorMapEntry color="#253B97" quantity=".03" label=".03" />' +
-                '<ColorMapEntry color="#0C2060" quantity=".01" label=".01"/>' +
-                '<ColorMapEntry color="#2296C1" quantity=".3" label=".3" />' +
-                '<ColorMapEntry color="#253B97" quantity=".1" label=".1" />' +
-                '<ColorMapEntry color="#4BB3BA" quantity="1" label="1" />' +
-                '<ColorMapEntry color="#8ED3BA" quantity="3" label="3" />' +
-                '<ColorMapEntry color="#CCE5AC" quantity="10" label="10" />' +
-                '<ColorMapEntry color="#F2FABC" quantity="30" label="30" />' +
-                '<ColorMapEntry color="#FEFFD8" quantity="60" label="60" />' +
+                '<ColorMapEntry color="#0000FF" quantity="0" label="0" />' +
+                '<ColorMapEntry color="#00FFFF" quantity="16" label="16"/>' +
+                '<ColorMapEntry color="#32CD32" quantity="32" label="32"/>' +
+                '<ColorMapEntry color="#FFFF00" quantity="48" label="48" />' +
+                '<ColorMapEntry color="#FFA500" quantity="64" label="64" />' +
+                '<ColorMapEntry color="#8B0000" quantity="80" label="80" />' +
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
         } else if ($("#product").val() === "sd") {
