@@ -219,4 +219,17 @@ div#map1legend, div#map2legend {
     #ismobile {
         display: block;
     }
+    div#map1legend, div#map2legend{
+        width:100px;
+
+    }
+    div#map1legend h2, div#map2legend h2 {
+        display: none;
+    }
+    #m1legendTitle, #m2legendTitle {
+        font: 10px/1.500 Muli;
+    }
+    #m1Image, #m2Image {
+        max-width: 100%;
+    }
 }
