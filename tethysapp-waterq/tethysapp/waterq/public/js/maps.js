@@ -73,7 +73,7 @@ var LIBRARY_OBJECT = (function () {
             maxBounds: [[-10, 10], [10, 45]]
         };
         map = L.map('map').setView([-0.7, 33.5], 8.4);
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             updateWhenIdle: false,
             updateWhenZooming: false,
@@ -81,7 +81,7 @@ var LIBRARY_OBJECT = (function () {
         }).addTo(map);
 
         map2 = L.map('map2').setView([-0.7, 33.5], 8.4);
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
             updateWhenIdle: false,
             updateWhenZooming: false,
