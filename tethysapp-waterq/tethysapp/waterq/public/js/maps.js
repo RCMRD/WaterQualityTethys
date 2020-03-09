@@ -407,7 +407,8 @@ var LIBRARY_OBJECT = (function () {
 
     function loadLegend(which) {
         $("#m" + which + "legendTitle").text($("#product  option:selected").text());
-        $("#m" + which + "Image").attr("src", "/static/waterq/images/" + $("#product").val().toLowerCase() + "_legend.png");
+        var sval = $("#product").val().toLowerCase() == "tsi_r" ? "tsir" : $("#product").val().toLowerCase();
+        $("#m" + which + "Image").attr("src", "/static/waterq/images/" + sval + "_legend.png");
         $("#map" + which + "legend").show();
     }
 
