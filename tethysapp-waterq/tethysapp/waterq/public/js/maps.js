@@ -636,7 +636,8 @@ var LIBRARY_OBJECT = (function () {
                 scale: calculateScale(),
                 geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
                 start_time: $("#time_start").val(),
-                end_time: $("#time_end").val()
+                end_time: $("#time_end").val(),
+                indexname: $("#product").val()
             };
             
             time_series_request(jobj);
