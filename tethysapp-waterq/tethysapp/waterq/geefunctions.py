@@ -409,11 +409,14 @@ def imageToMapId(imageName, visParams={}):
 
 def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None, sld=None, band=None):
     try:
+        print("Starting to retrieve collection")
         values = None
         eeCollection = None
         if band:
+            print("using band: " + band)
             eeCollection = ee.ImageCollection(collectionName).select(band)
         else:
+            print('band not selected')
             eeCollection = ee.ImageCollection(collectionName)
         if (dateFrom and dateTo):
             eeFilterDate = ee.Filter.date(dateFrom, dateTo)
