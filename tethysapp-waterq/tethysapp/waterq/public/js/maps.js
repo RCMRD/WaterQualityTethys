@@ -609,7 +609,7 @@ var LIBRARY_OBJECT = (function () {
         //if ($("#product").val() === "lst") {
         //    return "users/billyz313/LS8_VTM_lst";
         //}
-        return "users/" + user + "/" + platform + sensor + "_VTM_" + product;
+        return "projects/servir-e-sa/water_quality/ls8";
     }
     function getWQgraph() {
         if (createdPolyCoords) {
