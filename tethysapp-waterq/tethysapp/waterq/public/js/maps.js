@@ -57,7 +57,7 @@ var LIBRARY_OBJECT = (function () {
                 type: "landsat",
                 options: "<option value='8'>8</option>",
                 corrections: null,
-                products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='rrs'>RRS</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option>"//<option value='ndvi'>NDVI</option>" <option value='lst'>Land Surface Temperature</option>
+                products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option>"//<option value='ndvi'>NDVI</option>" <option value='lst'>Land Surface Temperature</option> <option value='rrs'>RRS</option>
             }
         ];
         return;
@@ -407,7 +407,7 @@ var LIBRARY_OBJECT = (function () {
 
     function loadLegend(which) {
         $("#m" + which + "legendTitle").text($("#product  option:selected").text());
-        $("#m" + which + "Image").attr("src", "/static/waterq/images/" + $("#product").val() + "_legend.png");
+        $("#m" + which + "Image").attr("src", "/static/waterq/images/" + $("#product").val().toLowerCase() + "_legend.png");
         $("#map" + which + "legend").show();
     }
 
