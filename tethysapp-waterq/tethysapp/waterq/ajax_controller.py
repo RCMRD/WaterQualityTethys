@@ -131,7 +131,7 @@ def get_imageCollection(request):
             time_end = info.get('end_time', None)
             sld = info.get('sld', None)
             band = info.get('band', None)
-            url = wq.getImageCollectionAsset(collection, visParams, reducer, time_start, time_end, sld)
+            url = wq.getImageCollectionAsset(collection, visParams, reducer, time_start, time_end, sld, band)
 
             return_obj = {
                     'url': url,
