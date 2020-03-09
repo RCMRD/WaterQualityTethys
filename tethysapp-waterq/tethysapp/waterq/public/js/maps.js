@@ -399,7 +399,8 @@ var LIBRARY_OBJECT = (function () {
             visparams: getVisParams(),
             start_time: $("#time_start").val(),
             end_time: $("#time_end").val(),
-            sld: getSld()
+            sld: getSld(),
+            band: $("#product").val()
         }, workingLayer, which);
         loadLegend(num);
     }

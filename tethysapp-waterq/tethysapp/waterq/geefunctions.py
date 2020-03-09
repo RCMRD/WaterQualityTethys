@@ -407,10 +407,14 @@ def imageToMapId(imageName, visParams={}):
         print("******imageToMapId error************", sys.exc_info()[0])
     return values
 
-def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None, sld=None):
+def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None, sld=None, band=None):
     try:
         values = None
-        eeCollection = ee.ImageCollection(collectionName)
+        eeCollection = None
+        if band:
+            eeCollection = ee.ImageCollection(collectionName).select(band)
+        else:
+            eeCollection = ee.ImageCollection(collectionName)
         if (dateFrom and dateTo):
             eeFilterDate = ee.Filter.date(dateFrom, dateTo)
             eeCollection = eeCollection.filter(eeFilterDate)
