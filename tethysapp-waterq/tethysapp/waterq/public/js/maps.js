@@ -632,7 +632,7 @@ var LIBRARY_OBJECT = (function () {
             var user = $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
             
             var jobj = {
-                collection: "projects/servir-e-sa/water_quality/ ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
+                collection: "projects/servir-e-sa/water_quality/ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
                 scale: calculateScale(),
                 geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
                 start_time: $("#time_start").val(),
