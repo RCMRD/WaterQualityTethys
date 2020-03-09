@@ -39,7 +39,7 @@ var LIBRARY_OBJECT = (function () {
         //    type: "modis",
         //    options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option><option value='others'>here</option>",
         //    corrections: "<option value='rrs'>RRS</option><option value='toa'>TOA</option>",
-        //    products: "<option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option>"
+        //    products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option>"
         //},
         //{
         //    type: "sentinel",
@@ -51,13 +51,13 @@ var LIBRARY_OBJECT = (function () {
         //    type: "landsat",
         //    options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
         //    corrections: null,
-        //    products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsir'>tsiR</option><option value='ndvi'>NDVI</option>"
+        //    products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='rrs'>RRS</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option><option value='ndvi'>NDVI</option>"
         //}
             {
                 type: "landsat",
                 options: "<option value='8'>8</option>",
                 corrections: null,
-                products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='sd'>Secchi Depth</option><option value='rrs'>RRS</option><option value='tsi'>tsi</option><option value='tsir'>tsiR</option>"//<option value='ndvi'>NDVI</option>"
+                products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='rrs'>RRS</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option>"//<option value='ndvi'>NDVI</option>" <option value='lst'>Land Surface Temperature</option>
             }
         ];
         return;
@@ -470,7 +470,7 @@ var LIBRARY_OBJECT = (function () {
                 '<ColorMapEntry color="#8B0000" quantity="80" label="80" />' +
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
-        } else if ($("#product").val() === "sd") {
+        } else if ($("#product").val() === "SD") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="intervals" extended="false" >' +
                 '<ColorMapEntry color="#E92E11" quantity="0.5" label="0.5"/>' +
@@ -501,7 +501,7 @@ var LIBRARY_OBJECT = (function () {
                 '<ColorMapEntry color="#421919" quantity="45" label="45" />' +
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
-        } else if ($("#product").val() === "tsi") {
+        } else if ($("#product").val() === "TSI") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="intervals" extended="true" >' +
                 '<ColorMapEntry color="#904D9D" quantity="0" label="0"/>' +
@@ -517,7 +517,7 @@ var LIBRARY_OBJECT = (function () {
                 '<ColorMapEntry color="#DA3726" quantity="100" label="100" />' +
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
-        } else if ($("#product").val() === "tsir") {
+        } else if ($("#product").val() === "TSI_R") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="intervals" extended="true" >' +
                 '<ColorMapEntry color="#904D9D" quantity="0" label="0"/>' +
@@ -547,7 +547,7 @@ var LIBRARY_OBJECT = (function () {
                 //,
                 //"palette": "00FFFF,0000FF"
             });
-        } else if ($("#product").val() === "sd") {
+        } else if ($("#product").val() === "SD") {
             return JSON.stringify({
                 //"min": "0",
                 //"max": "19"//,
@@ -560,14 +560,14 @@ var LIBRARY_OBJECT = (function () {
                 //,
                 //"palette": "0022c9,194bff,5d567c,b20000,f00a0a"
             });
-        } else if ($("#product").val() === "tsi") {
+        } else if ($("#product").val() === "TSI") {
             return JSON.stringify({
                 //"min": "0",
                 //"max": "100"
                 //,
                 //"palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
-        } else if ($("#product").val() === "tsir") {
+        } else if ($("#product").val() === "TSI_R") {
             return JSON.stringify({
                 //"min": "0",
                 //"max": "10"
@@ -601,7 +601,7 @@ var LIBRARY_OBJECT = (function () {
                     : "Error";
         var sensor = $("#sensor").val();
         var product = $("#product").val();
-        //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+        //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
         var user = "billyz313";
         if ($("#product").val() === "ndvi") {
             return "users/billyz313/tmvlakes";
@@ -628,7 +628,7 @@ var LIBRARY_OBJECT = (function () {
                         : "Error";
             var sensor = $("#sensor").val();
             var product = $("#product").val();
-            var user = $("#product").val() === "lst" || $("#product").val() === "tsi" || $("#product").val() === "tsiR" ? "abt0020" : "kimlotte423";
+            var user = $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
             
             var jobj = {
                 collection: getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
