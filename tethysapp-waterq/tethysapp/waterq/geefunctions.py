@@ -489,7 +489,7 @@ def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[
                 theReducer = ee.Reducer.mean()
             if indexName != None:
                 print("indexName in getImage:b4")
-                indexValue = image.reduceRegion(theReducer, geometry, scale).get(indexName)
+                indexValue = image.reduceRegion(theReducer, geometry, scale)
                 print("indexName in getImage:after")
             else:
                 print("no name in getImage")
