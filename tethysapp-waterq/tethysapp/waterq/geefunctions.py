@@ -452,18 +452,24 @@ def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', date
 def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[], dateFrom=None, dateTo=None, reducer=None):
     """  """
     try:
+        print("getTimeSeriesByCollectionAndIndex requested")
         geometry = None
         indexCollection = None
         if isinstance(coords[0], list):
+            print("1st")
             geometry = ee.Geometry.Polygon(coords)
         else:
+            print("2nd")
             geometry = ee.Geometry.Point(coords)
         if(dateFrom != None):
             if indexName != None:
+                print("index name: " + indexName)
                 indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo).select(indexName)
             else:
                 indexCollection = ee.ImageCollection(collectionName).filterDate(dateFrom, dateTo)
+                print("no name found")
         else:
+            print("no date found")
             indexCollection = ee.ImageCollection(collectionName)
         def getIndex(image):
             """  """
@@ -471,19 +477,26 @@ def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[
             indexValue = None
             if(reducer == 'min'):
                 theReducer = ee.Reducer.min()
+                print("reducer was min")
             elif (reducer == 'max'):
                 theReducer = ee.Reducer.max()
+                print("reducer was max")
             elif (reducer == 'mosaic'):
                 theReducer = ee.Reducer.mosaic()
+                print("reducer was mosaic")
             else:
                 print("reducer was mean")
                 theReducer = ee.Reducer.mean()
             if indexName != None:
+                print("indexName in getImage:b4")
                 indexValue = image.reduceRegion(theReducer, geometry, scale).get(indexName)
+                print("indexName in getImage:after")
             else:
+                print("no name in getImage")
                 indexValue = image.reduceRegion(theReducer, geometry, scale)
             date = image.get('system:time_start')
             indexImage = ee.Image().set('indexValue', [ee.Number(date), indexValue])
+            print("returning image")
             return indexImage
         indexCollection1 = indexCollection.map(getIndex)
         indexCollection2 = indexCollection1.aggregate_array('indexValue')
