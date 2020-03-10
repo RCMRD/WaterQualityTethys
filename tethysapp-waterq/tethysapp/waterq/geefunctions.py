@@ -501,7 +501,7 @@ def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[
         indexCollection1 = indexCollection.map(getIndex)
         indexCollection2 = indexCollection1.aggregate_array('indexValue')
         values = indexCollection2.getInfo()
-        print("I have values")
+        print(values)
     except Exception as e:
         print(str(e))
         raise Exception(sys.exc_info()[0])
