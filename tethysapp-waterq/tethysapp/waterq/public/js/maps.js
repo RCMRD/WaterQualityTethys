@@ -58,6 +58,12 @@ var LIBRARY_OBJECT = (function () {
                 options: "<option value='8'>8</option>",
                 corrections: null,
                 products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option>"//<option value='ndvi'>NDVI</option>" <option value='lst'>Land Surface Temperature</option> <option value='rrs'>RRS</option>
+            },
+            {
+               type: "modis",
+               options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option>",
+               corrections: null,
+               products: "<option value='chlor_a'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='TSI'>TSI</option><option value='SST'>SST</option>"
             }
         ];
         return;
@@ -407,7 +413,13 @@ var LIBRARY_OBJECT = (function () {
 
     function loadLegend(which) {
         $("#m" + which + "legendTitle").text($("#product  option:selected").text());
-        var sval = $("#product").val().toLowerCase() == "tsi_r" ? "tsir" : $("#product").val().toLowerCase();
+        var sval = $("#product").val().toLowerCase() == "tsi_r"
+            ? "tsir"
+            : $("#product").val().toLowerCase() == "chlor_a"
+                ? "chlor"
+                : $("#product").val().toLowerCase() == "sst"
+                    ? "lst"
+                    : $("#product").val().toLowerCase();
         $("#m" + which + "Image").attr("src", "/static/waterq/images/" + sval + "_legend.png");
         $("#map" + which + "legend").show();
     }
@@ -460,7 +472,7 @@ var LIBRARY_OBJECT = (function () {
     gtoggleCompareMap = toggleCompareMap;
     function getSld() {
 
-        if ($("#product").val() === "chlor") {
+        if ($("#product").val() === "chlor" || $("#product").val() === "chlor_a") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="ramp" extended="false" >' +
                 '<ColorMapEntry color="#0000FF" quantity="0" label="0" />' +
@@ -489,7 +501,7 @@ var LIBRARY_OBJECT = (function () {
                 '<ColorMapEntry color="#0000F5" quantity="19" label="19" />' +
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
-        } else if ($("#product").val() === "lst") {
+        } else if ($("#product").val() === "lst" || $("#product").val() === "SST") {
             return '<RasterSymbolizer>' +
                 '<ColorMap type="ramp" extended="false" >' +
                 '<ColorMapEntry color="#0000ff" quantity="0" label="0"/>' +
@@ -541,7 +553,7 @@ var LIBRARY_OBJECT = (function () {
         }
     }
     function getVisParams() {
-        if ($("#product").val() === "chlor") {
+        if ($("#product").val() === "chlor" || $("#product").val() === "chlor_a") {
             return JSON.stringify({
                 //"min": "0",
                 //"max": "500"
@@ -554,7 +566,7 @@ var LIBRARY_OBJECT = (function () {
                 //"max": "19"//,
                 //"palette": "E92E11,EB6016,F19420,F4CD2C,FBFF37,E6FC68,CAFC9E,A0F8C4,72FCFE,5BC0FD,4A81FC,2B47FB,0000F5"
             });
-        } else if ($("#product").val() === "lst") {
+        } else if ($("#product").val() === "lst" || $("#product").val() === "SST") {
             return JSON.stringify({
                 "min": "-5",
                 "max": "112"
@@ -594,23 +606,26 @@ var LIBRARY_OBJECT = (function () {
 
     function getCollection() {
         var platform = $("#platform").val() === "modis"
-            ? "mod"
+            ? "modis"
             : $("#platform").val() === "sentinel"
                 ? "sen"
                 : $("#platform").val() === "landsat"
-                    ? "LS"
+                    ? "ls"
                     : "Error";
         var sensor = $("#sensor").val();
         var product = $("#product").val();
         //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
         var user = "billyz313";
-        if ($("#product").val() === "ndvi") {
-            return "users/billyz313/tmvlakes";
+        if (platform === "ls") {
+            return "projects/servir-e-sa/water_quality/" + platform + sensor;
+        } else if (platform === "modis")
+        {
+            return "projects/servir-e-sa/water_quality/" + platform + "/" + sensor;
         }
         //if ($("#product").val() === "lst") {
         //    return "users/billyz313/LS8_VTM_lst";
         //}
-        return "projects/servir-e-sa/water_quality/ls8";
+        return "projects/servir-e-sa/water_quality/" + platform + sensor;
     }
     function getWQgraph() {
         if (createdPolyCoords) {
@@ -632,7 +647,7 @@ var LIBRARY_OBJECT = (function () {
             var user = $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
             
             var jobj = {
-                collection: "projects/servir-e-sa/water_quality/ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
+                collection: getCollection(), //"projects/servir-e-sa/water_quality/ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
                 scale: calculateScale(),
                 geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
                 start_time: $("#time_start").val(),
