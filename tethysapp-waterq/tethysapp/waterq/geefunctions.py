@@ -354,9 +354,9 @@ class landsat8(object):
                     raise ValueError('You need a product to view')
           else:
                print('do stuff here')
-          tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
+          #tile_url_template = map_id['tile_fetcher'].url_format
 
-          return tile_url_template.format(**map_id)
+          return map_id['tile_fetcher'].url_format
 
 #################################################################
 ## MODIS FUNCTIONS
@@ -390,27 +390,23 @@ class modis(object):
                          raise ValueError("Select a Terra Product")
           else:
                raise ValueError("Select a platform")
-          tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
-          return tile_url_template.format(**map_id)
+          #tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
+          return map_id['tile_fetcher'].url_format
 
 def imageToMapId(imageName, visParams={}):
     """  """
     try:
         eeImage = ee.Image(imageName)
         mapId = eeImage.getMapId(visParams)
-        values = {
-            'mapid': mapId['mapid'],
-            'token': mapId['token']
-        }
     except EEException as e:
         print(str(e))
         print("******imageToMapId error************", sys.exc_info()[0])
-    return values
+    return mapId
 
 def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', dateFrom=None, dateTo=None, sld=None, band=None):
     try:
         print("Starting to retrieve collection")
-        values = None
+        map_id = None
         eeCollection = None
         if band:
             print("using band: " + band)
@@ -423,31 +419,31 @@ def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', date
             eeCollection = eeCollection.filter(eeFilterDate)
         if(reducer == 'min'):
             if(sld):
-                values = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
+                map_id = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
             else:
-                values = imageToMapId(eeCollection.min(), visParams)
+                map_id = imageToMapId(eeCollection.min(), visParams)
         elif (reducer == 'max'):
             if(sld):
-                values = imageToMapId(eeCollection.max().sldStyle(sld), visParams)
+                map_id = imageToMapId(eeCollection.max().sldStyle(sld), visParams)
             else:
-                values = imageToMapId(eeCollection.max(), visParams)
+                map_id = imageToMapId(eeCollection.max(), visParams)
         elif (reducer == 'mosaic'):
             if(sld):
-                values = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
+                map_id = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
             else:
-                values = imageToMapId(eeCollection.mion(), visParams)
+                map_id = imageToMapId(eeCollection.mion(), visParams)
         else:
             if(sld):
-                values = imageToMapId(eeCollection.mean().sldStyle(sld), visParams)
+                map_id = imageToMapId(eeCollection.mean().sldStyle(sld), visParams)
             else:
-                values = imageToMapId(eeCollection.mean(), visParams)
+                map_id = imageToMapId(eeCollection.mean(), visParams)
         
     except EEException as e:
         print(str(e))
         print(str(sys.exc_info()[0]))
         raise Exception(sys.exc_info()[0])
-    tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
-    return tile_url_template.format(**values)
+    #tile_url_template = "https://earthengine.googleapis.com/map/{mapid}/{{z}}/{{x}}/{{y}}?token={token}"
+    return map_id['tile_fetcher'].url_format
 
 def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[], dateFrom=None, dateTo=None, reducer=None):
     """  """
