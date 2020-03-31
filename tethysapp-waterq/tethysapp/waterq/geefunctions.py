@@ -12,6 +12,7 @@ from . import geeparams as geeAccount
 
 if geeAccount.service_account:
     try:
+        print("water quality")
         credentials = ee.ServiceAccountCredentials(geeAccount.service_account, geeAccount.privateKey)
         ee.Initialize(credentials)
     except EEException as e:
@@ -20,14 +21,7 @@ else:
     try:
          ee.Initialize()
     except EEException as e:
-        from oauth2client.service_account import ServiceAccountCredentials 
-        credentials = ServiceAccountCredentials.from_p12_keyfile(
-        service_account_email='',
-        filename='',
-        private_key_password='notasecret',
-        scopes=ee.oauth.SCOPE + ' https://www.googleapis.com/auth/drive ')
-        ee.Initialize(credentials)
-
+        print(str(e))
 tablename = 'users/kimlotte423/LV_Basin'                        
 table = ee.FeatureCollection(tablename)
 

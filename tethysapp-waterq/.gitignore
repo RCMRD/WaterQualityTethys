@@ -7,4 +7,6 @@
 *.db
 *.sqlite
 *.DS_Store
-*geeparams.txt 
+*geeparams.txt
+*geeparams.py
+.idea/
