@@ -649,7 +649,7 @@ var LIBRARY_OBJECT = (function () {
             var jobj = {
                 collection: getCollection(), //"projects/servir-e-sa/water_quality/ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
                 scale: calculateScale(),
-                geometry: JSON.stringify(createdPolyCoords.geometry.coordinates[0]),
+                geometry: gString,
                 start_time: $("#time_start").val(),
                 end_time: $("#time_end").val(),
                 indexname: $("#product").val()
@@ -662,20 +662,25 @@ var LIBRARY_OBJECT = (function () {
     }
 
     function calculateScale() {
-        var area = L.GeometryUtil.geodesicArea(gdrawnLayer.getLatLngs()[0]);
-        if (area < 893752263) {
+        try {
+            var area = L.GeometryUtil.geodesicArea(gdrawnLayer.getLatLngs()[0]);
+            if (area < 893752263) {
+                return 30;
+            } else if (area < 12796975540) {
+                return 60;
+            } else if (area < 36523747484) {
+                return 100;
+            } else if (area < 46442458798) {
+                return 150;
+            } else if (area < 96442458798) {
+                return 250;
+            } else {
+                return 500
+            }
+        } catch (e) {
             return 30;
-        } else if (area < 12796975540) {
-            return 60;
-        } else if (area < 36523747484) {
-            return 100;
-        } else if (area < 46442458798) {
-            return 150;
-        } else if (area < 96442458798) {
-            return 250;
-        } else {
-            return 500
         }
+
     }
 
     function fillSensorOptions() {

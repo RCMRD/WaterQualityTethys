@@ -443,6 +443,7 @@ def getTimeSeriesByCollectionAndIndex(collectionName, indexName, scale, coords=[
     """  """
     try:
         print("getTimeSeriesByCollectionAndIndex requested")
+        print(str(coords))
         geometry = None
         indexCollection = None
         if isinstance(coords[0], list):
