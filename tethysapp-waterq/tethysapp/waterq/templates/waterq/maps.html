@@ -58,15 +58,18 @@
         <span class="optTitle">Satellite Platform:</span>
         <br>
         <select name="master" id="platform" class="selectors buttontheme" style="width:98%;">
-           <option value="modis" > Modis</option>
+            <option value="modis" > Modis</option>
              <!--<option value="sentinel">Sentinel</option>-->
             <option value="landsat" selected>Landsat</option>
+            <option value="sentinel" selected>Sentinel</option>
         </select>
     </p>
     <p id="sensorSelect" style="display:block;">
         <span class="optTitle" id="missionTitle">Sensor:</span>
         <br>
         <select name="sensor" id="sensor" class="selectors buttontheme" style="width:98%;">
+            <option value='8'>1</option>
+            <option value='8'>2</option>
             <option value='8'>8</option>
 
         </select>
@@ -83,8 +86,15 @@
         <span class="optTitle">Product:</span>
         <br>
         <select name="product" id="product" class="selectors buttontheme" style="width:98%;">
-            <option value="chla" selected>CHL_A</option>
-            <option value="sd">Secchi Depth</option>
+            <option value="chlor_a" selected>Chlorophyl a</option>
+            <option value="SD">Secchi Depth</option>
+            <option value="TSI">Trophic State Index</option>
+            <option value="TSI_R">Trophic State Index Reclassified</option>
+            <option value="ndviHyacinth">Hyacinth (NDVI)</option>
+            <option value="mndwiHyacinth">Hyacinth (MNDWI)</option>
+            <option value="VH">Hyacinth (Radar)</option>
+            <option value="FAI">Floating Algal Index</option>
+            <option value="ndvi">NDVI</option>
         </select>
     </p>
 </form>

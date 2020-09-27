@@ -587,11 +587,11 @@ var LIBRARY_OBJECT = (function () {
                 //,
                 //"palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
-        } else if ($("#product").val() === "rrs") {
+        } else if ($("#product").val() === "FAI") {
             return JSON.stringify({
-                "min": ".006",
-                "max": ".01",
-                "bands":"B5,B4,B3"
+                "min": "-0.05", 
+                "max": "0.2",
+                "palette": "000080,0080FF,7BFF7B,FF9700,800000"
                 //, this will need to request bands
                 //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
             });
@@ -600,6 +600,19 @@ var LIBRARY_OBJECT = (function () {
                 "min": "-1",
                 "max": "1",
                 "palette": "0006bf,0313ac,062099,092d86,0d3a73,104760,13544d,17613a,1a6e27,1d7b14,218802"
+            });
+        } else if ($("#product").val() === "VH") {
+            return JSON.stringify({
+                "min": "-20",
+                "max": "-13"
+            });
+        } else if ($("#product").val() === "ndviHyacinth") {
+            return JSON.stringify({
+                "palette": "red"
+            });
+        } else if ($("#product").val() === "mndwiHyacinth") {
+            return JSON.stringify({
+                "palette": "cyan"
             });
         }
     }
@@ -617,8 +630,17 @@ var LIBRARY_OBJECT = (function () {
         //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
         var user = "billyz313";
         if (platform === "ls") {
-            return "projects/servir-e-sa/water_quality/" + platform + sensor;
-        } else if (platform === "modis")
+            if (sensor === 8) {
+                return "projects/servir-e-sa/water_quality/ls82";
+            }
+        } else if (platform === "sen") {
+            if (sensor === 1) {
+                return "projects/servir-e-sa/water_quality/sentinel_1";
+            } else {
+                return "projects/servir-e-sa/water_quality/sentinel_2";
+            }
+        }
+        else if (platform === "modis")
         {
             return "projects/servir-e-sa/water_quality/" + platform + "/" + sensor;
         }
