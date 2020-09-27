@@ -41,23 +41,25 @@ var LIBRARY_OBJECT = (function () {
         //    corrections: "<option value='rrs'>RRS</option><option value='toa'>TOA</option>",
         //    products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option>"
         //},
-        //{
-        //    type: "sentinel",
-        //    options: "<option value='1'>1</option><option value='2'>2</option><option value='others'>here</option>",
-        //    corrections: "<option value='tbd'>TBD</option><option value='notsure'>Not Sure</option>",
-        //    products: "<option value='tbd'>TBD</option>"
-        //},
-        //{
-        //    type: "landsat",
-        //    options: "<option value='7'>7</option><option value='8'>8</option><option value='others'>here</option>",
-        //    corrections: null,
-        //    products: "<option value='lst'>Land Surface Temperature</option><option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='rrs'>RRS</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option><option value='ndvi'>NDVI</option>"
-        //}
+        {
+           type: "sentinel",
+           options: "<option value='1'>1</option><option value='2'>2</option>",
+           corrections: null,
+           products: "<option value='VH'>VH Polarization</option> \
+           <option value='chlor_a'>CHL_A</option><option value='SD'>Secchi Depth</option> \
+           <option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option> \
+           <option value='ndvi'>NDVI</option> \
+           <option value='FAI'>FAI</option><option value='ndviHyacinth'>Hyacinth (NDVI)</option> \
+           <option value='mndwiHyacinth'>Hyacinth (MNDWI)</option>"
+        },
             {
                 type: "landsat",
                 options: "<option value='8'>8</option>",
                 corrections: null,
-                products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option>"//<option value='ndvi'>NDVI</option>" <option value='lst'>Land Surface Temperature</option> <option value='rrs'>RRS</option>
+                products: "<option value='chlor_a'>CHL_A</option><option value='SD'>Secchi Depth</option> \
+                <option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option><option value='ndvi'>NDVI</option> \
+               <option value='FAI'>FAI</option><option value='ndviHyacinth'>Hyacinth (NDVI)</option> \
+               <option value='mndwiHyacinth'>Hyacinth (MNDWI)</option> "
             },
             {
                type: "modis",
@@ -547,7 +549,12 @@ var LIBRARY_OBJECT = (function () {
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
         } else if ($("#product").val() === "rrs") {
-            return '';
+            return '<RasterSymbolizer>' +
+                '<ColorMap type="intervals" extended="true" >' +
+                '<ColorMapEntry color="#323232" quantity="-20" label="1" />' +
+                '<ColorMapEntry color="#BBBBBB" quantity="-17" label="2" />' +
+                '</ColorMap>' +
+                '</RasterSymbolizer>';
         } else {
             return null;
         }
@@ -604,7 +611,7 @@ var LIBRARY_OBJECT = (function () {
         } else if ($("#product").val() === "VH") {
             return JSON.stringify({
                 "min": "-20",
-                "max": "-13"
+                "max": "-14"
             });
         } else if ($("#product").val() === "ndviHyacinth") {
             return JSON.stringify({
@@ -630,11 +637,11 @@ var LIBRARY_OBJECT = (function () {
         //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
         var user = "billyz313";
         if (platform === "ls") {
-            if (sensor === 8) {
+            if (sensor === "8") {
                 return "projects/servir-e-sa/water_quality/ls82";
             }
         } else if (platform === "sen") {
-            if (sensor === 1) {
+            if (sensor === "1") {
                 return "projects/servir-e-sa/water_quality/sentinel_1";
             } else {
                 return "projects/servir-e-sa/water_quality/sentinel_2";
