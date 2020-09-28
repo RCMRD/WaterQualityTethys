@@ -425,7 +425,7 @@ def getImageCollectionAsset(collectionName, visParams={}, reducer='mosaic', date
             if(sld):
                 map_id = imageToMapId(eeCollection.min().sldStyle(sld), visParams)
             else:
-                map_id = imageToMapId(eeCollection.mion(), visParams)
+                map_id = imageToMapId(eeCollection.min(), visParams)
         else:
             if(sld):
                 map_id = imageToMapId(eeCollection.mean().sldStyle(sld), visParams)

@@ -59,13 +59,14 @@ var LIBRARY_OBJECT = (function () {
                 products: "<option value='chlor_a'>CHL_A</option><option value='SD'>Secchi Depth</option> \
                 <option value='TSI'>tsi</option><option value='TSI_R'>tsiR</option><option value='ndvi'>NDVI</option> \
                <option value='FAI'>FAI</option><option value='ndviHyacinth'>Hyacinth (NDVI)</option> \
-               <option value='mndwiHyacinth'>Hyacinth (MNDWI)</option> "
+               <option value='mndwiHyacinth'>Hyacinth (MNDWI)</option> <option value='LST'>LST</option>"
             },
             {
                type: "modis",
                options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option>",
                corrections: null,
-               products: "<option value='chlor_a'>CHL_A</option><option value='SD'>Secchi Depth</option><option value='TSI'>TSI</option><option value='SST'>SST</option>"
+               products: "<option value='chlor_a'>CHL_A</option><option value='SD'>Secchi Depth</option> \
+                         <option value='TSI'>TSI</option><option value='sst'>SST</option>"
             }
         ];
         return;
@@ -503,7 +504,7 @@ var LIBRARY_OBJECT = (function () {
                 '<ColorMapEntry color="#0000F5" quantity="19" label="19" />' +
                 '</ColorMap>' +
                 '</RasterSymbolizer>';
-        } else if ($("#product").val() === "lst" || $("#product").val() === "SST") {
+        } else if ($("#product").val() === "LST" || $("#product").val() === "SST" || $("#product").val() === "sst" ){
             return '<RasterSymbolizer>' +
                 '<ColorMap type="ramp" extended="false" >' +
                 '<ColorMapEntry color="#0000ff" quantity="0" label="0"/>' +
@@ -573,10 +574,10 @@ var LIBRARY_OBJECT = (function () {
                 //"max": "19"//,
                 //"palette": "E92E11,EB6016,F19420,F4CD2C,FBFF37,E6FC68,CAFC9E,A0F8C4,72FCFE,5BC0FD,4A81FC,2B47FB,0000F5"
             });
-        } else if ($("#product").val() === "lst" || $("#product").val() === "SST") {
+        } else if ($("#product").val() === "LST" || $("#product").val() === "SST" || $("#product").val() === "sst") {
             return JSON.stringify({
-                "min": "-5",
-                "max": "112"
+                // "min": "-5",
+                // "max": "112"
                 //,
                 //"palette": "0022c9,194bff,5d567c,b20000,f00a0a"
             });
@@ -673,7 +674,7 @@ var LIBRARY_OBJECT = (function () {
                         : "Error";
             var sensor = $("#sensor").val();
             var product = $("#product").val();
-            var user = $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
+            var user = $("#product").val() === "LST" || $("#product").val() === "sst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
             
             var jobj = {
                 collection: getCollection(), //"projects/servir-e-sa/water_quality/ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
