@@ -35,12 +35,6 @@ var LIBRARY_OBJECT = (function () {
         $selectProd = $('#productSelect');
         modalChart = $("#chart-modal");
         platform = [
-        //    {
-        //    type: "modis",
-        //    options: "<option value='aqua'>Aqua</option><option value='terra'>Terra</option><option value='others'>here</option>",
-        //    corrections: "<option value='rrs'>RRS</option><option value='toa'>TOA</option>",
-        //    products: "<option value='chlor'>CHL_A</option><option value='SD'>Secchi Depth</option>"
-        //},
         {
            type: "sentinel",
            options: "<option value='1'>1</option><option value='2'>2</option>",
@@ -73,8 +67,6 @@ var LIBRARY_OBJECT = (function () {
     };
     // Define Map Attributes
     init_map = function () {
-        // Based on choice,t he view should change automatically
-        // This segment will be reworked
         var mapOptions = {
             centre: [-0.5, 35],
             zoom: 10,
@@ -118,19 +110,7 @@ var LIBRARY_OBJECT = (function () {
                         color: 'rgb(6, 126, 245)'
                     }
                 },
-                marker: true /* {
-                    icon: L.icon({
-                            iconUrl: 'leaf-green.png',
-                            shadowUrl: 'leaf-shadow.png',
-
-                            iconSize: [38, 95], // size of the icon
-                            shadowSize: [50, 64], // size of the shadow
-                            iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-                            shadowAnchor: [4, 62],  // the same for the shadow
-                            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-                        })
-                    
-                } */
+                marker: true 
             },
             edit: {
                 featureGroup: editableLayers,
@@ -563,45 +543,24 @@ var LIBRARY_OBJECT = (function () {
     function getVisParams() {
         if ($("#product").val() === "chlor" || $("#product").val() === "chlor_a") {
             return JSON.stringify({
-                //"min": "0",
-                //"max": "500"
-                //,
-                //"palette": "00FFFF,0000FF"
             });
         } else if ($("#product").val() === "SD") {
             return JSON.stringify({
-                //"min": "0",
-                //"max": "19"//,
-                //"palette": "E92E11,EB6016,F19420,F4CD2C,FBFF37,E6FC68,CAFC9E,A0F8C4,72FCFE,5BC0FD,4A81FC,2B47FB,0000F5"
             });
         } else if ($("#product").val() === "LST" || $("#product").val() === "SST" || $("#product").val() === "sst") {
             return JSON.stringify({
-                // "min": "-5",
-                // "max": "112"
-                //,
-                //"palette": "0022c9,194bff,5d567c,b20000,f00a0a"
             });
         } else if ($("#product").val() === "TSI") {
             return JSON.stringify({
-                //"min": "0",
-                //"max": "100"
-                //,
-                //"palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
         } else if ($("#product").val() === "TSI_R") {
             return JSON.stringify({
-                //"min": "0",
-                //"max": "10"
-                //,
-                //"palette": "f00a0a,b20000,5d567c,194bff,0022c9"
             });
         } else if ($("#product").val() === "FAI") {
             return JSON.stringify({
                 "min": "-0.05", 
                 "max": "0.2",
                 "palette": "000080,0080FF,7BFF7B,FF9700,800000"
-                //, this will need to request bands
-                //"palette": "FF2026,FF5F26,FF9528,FFCC29,FBFF2C,C5FF5E,75FF93,00FFC7,00FEFD,00BFFD,007CFD,3539FD,3400FC"
             });
         } else if ($("#product").val() === "ndvi") {
             return JSON.stringify({
@@ -635,7 +594,6 @@ var LIBRARY_OBJECT = (function () {
                     : "Error";
         var sensor = $("#sensor").val();
         var product = $("#product").val();
-        //var user = $("#product").val() === "ndvi" ? "billyz313" : $("#product").val() === "lst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
         var user = "billyz313";
         if (platform === "ls") {
             if (sensor === "8") {
@@ -652,9 +610,6 @@ var LIBRARY_OBJECT = (function () {
         {
             return "projects/servir-e-sa/water_quality/" + platform + "/" + sensor;
         }
-        //if ($("#product").val() === "lst") {
-        //    return "users/billyz313/LS8_VTM_lst";
-        //}
         return "projects/servir-e-sa/water_quality/" + platform + sensor;
     }
     function getWQgraph() {
@@ -677,7 +632,7 @@ var LIBRARY_OBJECT = (function () {
             var user = $("#product").val() === "LST" || $("#product").val() === "sst" || $("#product").val() === "TSI" || $("#product").val() === "TSI_R" ? "abt0020" : "kimlotte423";
             
             var jobj = {
-                collection: getCollection(), //"projects/servir-e-sa/water_quality/ls8", //getCollection(), //"users/" + user + "/" + platform + sensor + "_VTM_"+ product, //"users/kimlotte423/LS8_VTM_chlor", //"users/abt0020/LS8_VTM_lst", //"users/kimlotte423/LS8_LV_tsiR",
+                collection: getCollection(), 
                 scale: calculateScale(),
                 geometry: gString,
                 start_time: $("#time_start").val(),
@@ -883,7 +838,6 @@ var LIBRARY_OBJECT = (function () {
                 }, 500);
             }, 500);
         });
-        // if ismobile add shownav class to app-content-wrapper
     });
     return public_interface;
 }());

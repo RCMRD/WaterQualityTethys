@@ -26,7 +26,6 @@
             chart.destroy();
             chart = null;
         }
-        //$("#view-file-loading").toggleClass("hidden");
         var xhr = $.ajax({
             type: "POST",
             url: 'maps/get_timeseries/',
@@ -73,9 +72,7 @@
                     });
                 }
                 plotData(pData);
-                //$("#view-file-loading").toggleClass("hidden");
             } else {
-                //$("#view-file-loading").toggleClass("hidden");
                 alert('Opps, there was a problem processing the request. Please see the following error: ' + data.error);
             }
         });
@@ -170,14 +167,4 @@
         });
 
     }
-
-
-
-
-
-
-
-
-
-
 });
